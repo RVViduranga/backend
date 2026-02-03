@@ -2,7 +2,7 @@
 
 > A modern, production-ready job search and recruitment platform built with React, TypeScript, and Vite. Features comprehensive job search, application management, and company dashboards with enterprise-grade code quality and accessibility.
 
-> **📚 New to the project?** Check out [DEVELOPER_GUIDELINES.md](./DEVELOPER_GUIDELINES.md) for architecture principles, coding standards, and best practices.
+> **📚 Backend Integration?** Check out [BACKEND_DEVELOPER_GUIDE.md](./BACKEND_DEVELOPER_GUIDE.md) for complete API specifications and integration instructions.
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9.3-blue.svg)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-18.3.1-61DAFB.svg)](https://reactjs.org/)
@@ -386,6 +386,22 @@ npm run preview
 npm run lint
 ```
 
+### Type Checking
+
+```bash
+npx tsc --noEmit
+```
+
+### Testing
+
+```bash
+# Run all tests
+npm test
+
+# Run tests with coverage
+npm run test:coverage
+```
+
 ### Deployment
 
 The application is a static SPA and can be deployed to:
@@ -397,8 +413,6 @@ The application is a static SPA and can be deployed to:
 - Any static file hosting service
 
 **Environment Variables:** Make sure to set `VITE_API_BASE_URL` in your hosting platform's environment variables.
-
-See `PRODUCTION_CHECKLIST.md` for detailed production deployment information.
 
 ---
 
@@ -447,53 +461,42 @@ This is a private project. For questions, suggestions, or issues, please contact
 
 ---
 
+## 🧪 Testing
+
+The project includes comprehensive testing infrastructure:
+
+### Running Tests
+
+```bash
+# Run all tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run tests with coverage
+npm run test:coverage
+```
+
+### Test Coverage
+
+- ✅ **143 tests** covering:
+  - Service layer integration tests (auth, user, company, job, analytics)
+  - Validation schema tests (Zod schemas)
+  - Data transformer tests (user, company, job transformations)
+  - Utility function tests (date formatting, profile calculations, job formatting)
+
+### Testing Stack
+
+- **Vitest** - Fast unit test framework
+- **@testing-library/react** - React component testing utilities
+- **jsdom** - DOM environment for tests
+
+---
+
 ## 📚 Developer Guidelines
 
-This project follows strict architectural principles to ensure maintainability and scalability. All developers should familiarize themselves with our guidelines before contributing.
-
-### Key Documents
-
-- **[DEVELOPER_GUIDELINES.md](./DEVELOPER_GUIDELINES.md)** - Complete developer guide covering:
-  - Architecture principles and separation of concerns
-  - Directory structure rules
-  - Coding standards and best practices
-  - How to add new features
-  - Code review checklist
-  - Common patterns and anti-patterns
-
-- **[PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md)** - Detailed folder structure documentation
-
-- **[PROJECT_MECHANISMS.md](./PROJECT_MECHANISMS.md)** - Technical mechanisms and patterns
-
-- **[ARCHITECTURAL_COMPLIANCE_SUMMARY.md](./ARCHITECTURAL_COMPLIANCE_SUMMARY.md)** - Architecture audit results
-
-### Backend Integration
-
-- **[BACKEND_INTEGRATION_GUIDE.md](./BACKEND_INTEGRATION_GUIDE.md)** - Complete backend integration guide:
-  - API endpoint requirements and specifications
-  - Data transformation requirements
-  - Migration checklist
-  - Testing strategy
-  - Error handling
-
-- **[API_ENDPOINTS_REFERENCE.md](./API_ENDPOINTS_REFERENCE.md)** - Quick reference for backend developers:
-  - All API endpoints in table format
-  - Authentication requirements
-  - Request/response examples
-
-- **[ENVIRONMENT_SETUP.md](./ENVIRONMENT_SETUP.md)** - Environment configuration guide:
-  - `.env` file setup
-  - Configuration options
-  - Security notes
-
-- **[BACKEND_INTEGRATION_SUMMARY.md](./BACKEND_INTEGRATION_SUMMARY.md)** - Quick summary and next steps
-
-### Quick Start for Developers
-
-1. **Read the Guidelines:** Start with [DEVELOPER_GUIDELINES.md](./DEVELOPER_GUIDELINES.md)
-2. **Understand Architecture:** Review [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md)
-3. **Follow Patterns:** Check [PROJECT_MECHANISMS.md](./PROJECT_MECHANISMS.md)
-4. **Code Review:** Use the checklist in DEVELOPER_GUIDELINES.md
+This project follows strict architectural principles to ensure maintainability and scalability.
 
 ### Key Principles
 
@@ -502,6 +505,17 @@ This project follows strict architectural principles to ensure maintainability a
 - ✅ **Type Safety:** All constants and data structures are properly typed
 - ✅ **No Magic Strings:** Use constants instead of hardcoded strings
 - ✅ **Data Flow:** Component → Hook → Service → Data Source
+
+### Backend Integration
+
+- **[BACKEND_DEVELOPER_GUIDE.md](./BACKEND_DEVELOPER_GUIDE.md)** - Complete backend integration guide:
+  - API endpoint requirements and specifications
+  - Data transformation requirements
+  - Migration checklist
+  - Testing strategy
+  - Error handling
+  - Authentication flow
+  - Request/response examples
 
 ---
 
