@@ -1,0 +1,10 @@
+{
+    "recommendations": [
+        "kamikillerto.vscode-colorize",
+        "streetsidesoftware.code-spell-checker",
+        "dbaeumer.vscode-eslint",
+        "eamodio.gitlens",
+        "edgardmessias.override-mark",
+        "johnpapa.vscode-peacock"
+    ]
+}
