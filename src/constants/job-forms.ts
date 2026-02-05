@@ -55,3 +55,16 @@ export const INDUSTRY_OPTIONS = [
  * Default job type
  */
 export const DEFAULT_JOB_TYPE = "Full-Time" as const;
+
+/**
+ * Popular search terms (static)
+ * TODO: Replace with API call to get trending searches from database
+ * Backend endpoint: GET /jobs/popular-searches
+ */
+export const POPULAR_SEARCH_TERMS = [
+  "Software Developer",
+  "Marketing Manager",
+  "Data Analyst",
+  "Accountant",
+  "Sales Executive",
+] as const;

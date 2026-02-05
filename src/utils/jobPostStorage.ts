@@ -3,7 +3,7 @@
  * Handles temporary form data storage during multi-step job posting workflow
  * Uses sessionStorage for temporary form state between steps
  */
-import type { JobPostInputModel } from '@/models/job-data-forms';
+import type { JobPostInputModel } from '@/models/jobPosts';
 
 const STORAGE_KEYS = {
   JOB_POST_FORM_DATA: 'jobPostFormData',

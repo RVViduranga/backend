@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import type { JobSummaryModel } from "@/models/job";
+import type { JobSummaryModel } from "@/models/jobPosts";
 import SearchBar from "./SearchBar";
 import FilterSidebar from "./FilterSidebar";
 import SearchResultsHeader from "./SearchResultsHeader";
@@ -8,12 +8,14 @@ import EmptySearchState from "./EmptySearchState";
 import { Button } from "@/components/ui/button";
 import SafeIcon from "@/components/common/safe-icon";
 import { useJobSearchQuery } from "@/hooks/queries/use-job-search-query";
+import { useFilterOptionsQuery } from "@/hooks/queries/use-filter-options-query";
 import { Loader2 } from "lucide-react";
 import {
   LOCATION_OPTIONS,
   INDUSTRY_OPTIONS,
   EXPERIENCE_LEVEL_OPTIONS,
   JOB_TYPE_OPTIONS,
+  POPULAR_SEARCH_TERMS,
 } from "@/constants/job-forms";
 
 interface FilterState {
@@ -72,12 +74,15 @@ export default function JobSearchContent() {
     params: searchParams,
   });
 
-  // Filter options from constants
+  // Fetch filter options from service (with fallback to constants)
+  const { filterOptions: filterOptionsData } = useFilterOptionsQuery();
+  
+  // Use service data if available, otherwise fallback to constants
   const filterOptions = {
-    locations: [...LOCATION_OPTIONS],
-    industries: [...INDUSTRY_OPTIONS],
-    experienceLevel: [...EXPERIENCE_LEVEL_OPTIONS],
-    jobType: [...JOB_TYPE_OPTIONS],
+    locations: filterOptionsData?.locations || [...LOCATION_OPTIONS],
+    industries: filterOptionsData?.industries || [...INDUSTRY_OPTIONS],
+    experienceLevel: filterOptionsData?.experienceLevels || [...EXPERIENCE_LEVEL_OPTIONS],
+    jobType: filterOptionsData?.jobTypes || [...JOB_TYPE_OPTIONS],
   };
 
   // Use search results directly (filtering is handled by the service)
@@ -182,13 +187,7 @@ export default function JobSearchContent() {
                   Popular Searches:
                 </p>
                 <div className="flex flex-wrap justify-center gap-2">
-                  {[
-                    "Software Developer",
-                    "Marketing Manager",
-                    "Data Analyst",
-                    "Accountant",
-                    "Sales Executive",
-                  ].map((term) => (
+                  {POPULAR_SEARCH_TERMS.map((term) => (
                     <Button
                       key={term}
                       variant="outline"

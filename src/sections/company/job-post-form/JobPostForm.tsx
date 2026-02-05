@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/dialog";
 import SafeIcon from "@/components/common/safe-icon";
 import JobPostBreadcrumb from "./JobPostBreadcrumb";
-import { type JobPostInputModel } from "@/models/job-data-forms";
+import { type JobPostInputModel } from "@/models/jobPosts";
 import {
   JOB_TYPE_OPTIONS,
   EXPERIENCE_LEVEL_OPTIONS,

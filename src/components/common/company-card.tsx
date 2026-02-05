@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import SafeIcon from "@/components/common/safe-icon";
-import type { CompanySummaryModel } from "@/models/company";
+import type { CompanySummaryModel } from "@/models/companies";
 
 interface CompanyCardProps {
   company: CompanySummaryModel;

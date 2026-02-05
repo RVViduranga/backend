@@ -16,7 +16,7 @@ import ExperienceEducationSection from "./ExperienceEducationSection";
 import { useUser } from "@/hooks/use-user-context";
 import { toast } from "sonner";
 import { logger } from "@/lib/logger";
-import type { UserProfileModel } from "@/models/user-profile";
+import type { UserProfileModel } from "@/models/profiles";
 
 // Transform user profile to match component's expected structure
 function getInitialUserData(profile: UserProfileModel) {

@@ -5,7 +5,7 @@
 
 // API Configuration
 export const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api";
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
 
 // API Endpoints
 export const API_ENDPOINTS = {
@@ -29,6 +29,7 @@ export const API_ENDPOINTS = {
   // Users
   USERS: "/users",
   USER_PROFILE: "/users/profile",
+  USER_PROFILE_DETAILS: "/users/profile/details",
   USER_SAVED_JOBS: "/users/saved-jobs",
   USER_APPLICATIONS: "/users/applications",
   USER_APPLICATION_BY_ID: (id: string) => `/users/applications/${id}`,
@@ -51,16 +52,20 @@ export const API_ENDPOINTS = {
   // Auth
   AUTH_LOGIN: "/auth/login",
   AUTH_REGISTER: "/auth/register",
+  AUTH_REGISTER_USER: "/auth/register/user",
+  AUTH_REGISTER_COMPANY: "/auth/register/company",
   AUTH_LOGOUT: "/auth/logout",
   AUTH_REFRESH: "/auth/refresh",
   AUTH_GOOGLE: "/auth/google",
   AUTH_FORGOT_PASSWORD: "/auth/forgot-password",
   AUTH_RESET_PASSWORD: "/auth/reset-password",
   AUTH_CHANGE_PASSWORD: "/auth/change-password",
+  AUTH_DELETE_ACCOUNT: "/auth/account",
 
   // Analytics & Statistics
   ANALYTICS_PLATFORM_STATS: "/analytics/platform-stats",
   ANALYTICS_NEWSLETTER_SUBSCRIBE: "/analytics/newsletter/subscribe",
+  CONTACT: "/contact",
 } as const;
 
 // Re-export from other constant files

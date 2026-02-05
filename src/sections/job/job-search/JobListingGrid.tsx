@@ -1,4 +1,4 @@
-import type { JobSummaryModel } from "@/models/job";
+import type { JobSummaryModel } from "@/models/jobPosts";
 import JobCard from "@/components/common/job-card";
 
 interface JobListingGridProps {

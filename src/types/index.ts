@@ -36,57 +36,12 @@ export interface PaginatedResponse<T> {
 // ============================================================================
 // API REQUEST/RESPONSE TYPES
 // ============================================================================
-
-/**
- * Job Search API Request Parameters
- */
-export interface JobSearchParams {
-  query?: string;
-  location?: string[];
-  industry?: string[];
-  experienceLevel?: string[];
-  jobType?: string[];
-  salaryMin?: number;
-  salaryMax?: number;
-  page?: number;
-  limit?: number;
-  sortBy?: 'recent' | 'relevant';
-}
-
-/**
- * Job Search API Response
- */
-export interface JobSearchResponse {
-  jobs: import('@/models/job').JobSummaryModel[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-}
-
-/**
- * Job Application Form Data (API Request)
- */
-export interface JobApplicationData {
-  jobId: string;
-  fullName: string;
-  email: string;
-  phone: string;
-  coverLetter: string;
-  resumeFile: File;
-  location?: string;
-  linkedInUrl?: string;
-  portfolioUrl?: string;
-}
-
-/**
- * Job Application API Response
- */
-export interface JobApplicationResponse {
-  applicationId: string;
-  message: string;
-  status: 'success' | 'error';
-}
+// NOTE: Service-specific API types (e.g., JobSearchParams, JobSearchResponse)
+// are defined in their respective service files (e.g., @/services/job.ts)
+// and should be imported directly from there.
+//
+// This section only contains types that span multiple domains or are
+// truly global utilities.
 
 // ============================================================================
 // AUTH SERVICE TYPES
@@ -185,12 +140,19 @@ export type {
   DashboardStatModel as DashboardStat,
   ApplicantPersonalDetails,
   JobApplicationFormModel as JobApplicationForm,
-} from '@/models/user-profile';
+} from '@/models/profiles';
 
 export type {
   UserApplicationModel as UserApplication,
   UserApplicationStatus,
-} from '@/models/user-applications';
+  ApplicationStatus,
+  ApplicationModel as Application,
+} from '@/models/applications';
+
+export type {
+  SavedJobModel as SavedJob,
+  SavedJobInputModel as SavedJobInput,
+} from '@/models/savedJobs';
 
 // Company Domain
 export type {
@@ -198,7 +160,7 @@ export type {
   CompanyBrandingModel as CompanyBranding,
   CompanySummaryModel as CompanySummary,
   CompanyDetailModel as CompanyDetail,
-} from '@/models/company';
+} from '@/models/companies';
 
 // Job Domain
 export type {
@@ -206,17 +168,8 @@ export type {
   JobSummaryModel as JobSummary,
   JobDetailModel as JobDetail,
   JobSearchHeroModel as JobSearchHero,
-} from '@/models/job';
-
-export type {
   JobPostInputModel as JobPostInput,
-} from '@/models/job-data-forms';
-
-// Application Domain
-export type {
-  ApplicationStatus,
-  ApplicationModel as Application,
-} from '@/models/application';
+} from '@/models/jobPosts';
 
 // Site/Auth Domain
 export type {
@@ -228,4 +181,4 @@ export type {
   AuthPageVisuals,
   CompanyRegistrationModel as CompanyRegistration,
   UserSignupModel as UserSignup,
-} from '@/models/auth-data';
+} from '@/models/auth';

@@ -1,4 +1,4 @@
-import type { CompanyDetailModel, CompanySummaryModel } from "@/models/company";
+import type { CompanyDetailModel, CompanySummaryModel } from "@/models/companies";
 import CompanyCard from "@/components/common/company-card";
 
 interface CompaniesGridProps {

@@ -7,7 +7,7 @@ import SafeIcon from "@/components/common/safe-icon";
 import JobListingTable from "./JobListingTable";
 import { useCompany } from "@/hooks/use-company-context";
 import { Loader2 } from "lucide-react";
-import type { JobSummaryModel, JobStatus } from "@/models/job";
+import type { JobSummaryModel, JobStatus } from "@/models/jobPosts";
 
 export default function ManageJobsContent() {
   const { jobs, isLoading, refreshJobs } = useCompany();

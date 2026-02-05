@@ -7,7 +7,7 @@
  * - Mock data formats
  */
 
-import type { JobDetailModel, SalaryRangeModel } from "@/models/job";
+import type { JobDetailModel, SalaryRangeModel } from "@/models/jobPosts";
 
 /**
  * Parse salary range string to SalaryRangeModel object

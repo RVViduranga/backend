@@ -6,7 +6,7 @@
  * - UI convenience models (CompanyDetailModel)
  */
 
-import type { CompanyModel, CompanyDetailModel } from "@/models/company";
+import type { CompanyModel, CompanyDetailModel } from "@/models/companies";
 
 /**
  * Transform CompanyModel to CompanyDetailModel (UI convenience)

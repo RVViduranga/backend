@@ -21,7 +21,7 @@ import type {
   UserProfileModel,
   EducationModel,
   ExperienceModel,
-} from "@/models/user-profile";
+} from "@/models/profiles";
 
 export default function ProfileForm() {
   const navigate = useNavigate();

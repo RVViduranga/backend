@@ -13,7 +13,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import SafeIcon from "@/components/common/safe-icon"
 import JobActionMenu from './JobActionMenu'
-import type { JobSummaryModel } from '@/models/job'
+import type { JobSummaryModel } from '@/models/jobPosts'
 
 interface JobListingTableProps {
   jobs: JobSummaryModel[]

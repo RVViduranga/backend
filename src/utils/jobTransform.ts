@@ -3,9 +3,8 @@
  * Converts form data to job detail model format
  * Updated to use backend-aligned models (SalaryRangeModel)
  */
-import type { JobDetailModel, SalaryRangeModel } from '@/models/job';
-import type { JobPostInputModel } from '@/models/job-data-forms';
-import type { CompanySmallModel } from '@/models/company';
+import type { JobDetailModel, SalaryRangeModel, JobPostInputModel } from '@/models/jobPosts';
+import type { CompanySmallModel } from '@/models/companies';
 
 /**
  * Transform form data to JobDetailModel format (Backend-Aligned)
@@ -32,9 +31,8 @@ export function transformFormDataToJobDetail(
     jobType: formData.jobType,
     postedDate: new Date().toISOString().split('T')[0],
     experienceLevel: formData.experienceLevel,
-    salaryRange: { min: formData.salaryMin, max: formData.salaryMax }, // ✅ Changed to object
-    closingDate: formData.applicationDeadline, // ✅ Renamed from applicationDeadline
-    postedBy: postedBy || '', // ✅ Added
+    salaryRange: `${formData.salaryMin}-${formData.salaryMax}`, // ✅ Backend uses string format
+    applicationDeadline: formData.applicationDeadline, // ✅ Backend field name
     status: 'Active', // ✅ Added
     responsibilities: formData.requirements,
     qualifications: formData.requirements || formData.qualifications || [],

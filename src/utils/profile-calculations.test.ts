@@ -8,7 +8,8 @@ import {
   calculateSkillScore,
   splitFullName,
 } from './profile-calculations';
-import type { ExperienceModel, EducationModel } from '@/models/user-profile';
+import type { ExperienceModel } from '@/models/experience';
+import type { EducationModel } from '@/models/education';
 
 describe('calculateExperienceYears', () => {
   it('should return 0 for empty array', () => {

@@ -8,7 +8,7 @@ import { useUser } from '@/hooks/use-user-context'
 import { Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { logger } from '@/lib/logger'
-import type { EducationModel } from '@/models/user-profile'
+import type { EducationModel } from '@/models/education'
 
 interface Education {
   id: string

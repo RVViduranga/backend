@@ -1,4 +1,4 @@
-import type { CompanySummaryModel } from "@/models/company";
+import type { CompanySummaryModel } from "@/models/companies";
 import {
   Card,
   CardContent,

@@ -7,7 +7,7 @@ import { useCompany } from "@/hooks/use-company-context";
 import companyService from "@/services/company";
 import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
-import type { CompanyDetailModel } from "@/models/company";
+import type { CompanyDetailModel } from "@/models/companies";
 import { logger } from "@/lib/logger";
 
 export default function CompanyCard() {

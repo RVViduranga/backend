@@ -7,7 +7,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import companyService from '@/services/company';
 import { logger } from '@/lib/logger';
-import type { JobDetailModel, JobSummaryModel } from '@/models/job';
+import type { JobDetailModel, JobSummaryModel } from '@/models/jobPosts';
 
 interface UseManageJobMutationReturn {
   /**

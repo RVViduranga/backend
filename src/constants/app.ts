@@ -17,7 +17,7 @@ export const SITE_BRANDING: SiteBrandingModel = {
 };
 
 // Auth Page Visuals
-import type { AuthPageVisuals } from "@/models/auth-data";
+import type { AuthPageVisuals } from "@/models/auth";
 export const AUTH_VISUALS: AuthPageVisuals = {
   illustrationUrl: "https://spark-builder.s3.us-east-1.amazonaws.com/image/2025/11/17/ce4f7ead-d664-4cf3-941c-0eca53326e25.png",
   loginBackgroundUrl: "https://spark-builder.s3.us-east-1.amazonaws.com/image/2025/11/17/c8c4fd3f-0132-45d6-b39e-77803d0f99f5.png",

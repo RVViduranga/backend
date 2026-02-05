@@ -2,19 +2,22 @@
  * Auth Service - API calls for authentication-related operations
  *
  * ARCHITECTURE:
- * - MOCK DATA (CURRENT): Uses localStorage-based mock authentication for development
- * - BACKEND API (ENABLE LATER): Real API calls ready to uncomment
+ * - MOCK MODE (default): Uses mock data only (set VITE_DATA_MODE=mock)
+ * - BACKEND MODE: Uses backend API only (set VITE_DATA_MODE=backend)
  *
- * TO ENABLE BACKEND:
- * 1. Uncomment BACKEND API sections
- * 2. Comment out/remove MOCK DATA sections
- * 3. Remove localStorage usage for mock auth
+ * DATA MODE CONFIGURATION:
+ * Set VITE_DATA_MODE in .env file:
+ * - "mock" (default): Use mock data only (when backend is not available)
+ * - "backend": Use backend API only (when backend is available)
  *
  * NOTE: Auth operations should use backend API in production for security
  */
 import apiClient from "./api-client";
 import { API_ENDPOINTS, STORAGE_KEYS } from "@/constants";
+import { env } from "@/config/env";
 import type { AuthUser } from "@/contexts/auth-context";
+import type { CompanyRegistrationModel } from "@/models/auth";
+import type { UserRegistrationModel, BackendAuthResponse } from "@/models/users";
 import { MOCK_COMPANY_DETAIL } from "@/mocks";
 import { MOCK_USER_PROFILE } from "@/mocks";
 import { logger } from "@/lib/logger";
@@ -38,25 +41,17 @@ export interface RegisterData {
   name?: string;
 }
 
-export interface CompanyRegistrationData {
-  companyName: string;
-  industry: string;
-  website: string;
-  address: string;
-  phone: string;
-  location: string;
-  email: string;
-  password: string;
-}
+/**
+ * Company Registration Data (Service Layer)
+ * Derived from CompanyRegistrationModel by omitting UI-only confirmPassword field
+ */
+export type CompanyRegistrationData = Omit<CompanyRegistrationModel, "confirmPassword">;
 
-export interface UserRegistrationData {
-  firstName: string;
-  lastName: string;
-  phone: string;
-  location: string;
-  email: string;
-  password: string;
-}
+/**
+ * User Registration Data (Service Layer)
+ * Derived from UserRegistrationModel by omitting UI-only confirmPassword field
+ */
+export type UserRegistrationData = Omit<UserRegistrationModel, "confirmPassword">;
 
 export interface AuthResponse {
   user: AuthUser;
@@ -309,15 +304,21 @@ function createAuthUser(mockUser: MockAuthUser, name?: string): AuthUser {
 }
 
 // ============================================================================
-// AUTH SERVICE - MOCK DATA (CURRENT MODE)
+// AUTH SERVICE - MOCK/BACKEND MODE
 // ============================================================================
 
 export const authService = {
   /**
    * Login with email and password
    *
-   * MOCK: Checks localStorage for registered users
-   * BACKEND: Will use POST /auth/login
+   * MOCK MODE (default, VITE_DATA_MODE=mock):
+   * - Checks localStorage for registered users
+   * - Use when backend is not available
+   *
+   * BACKEND MODE (VITE_DATA_MODE=backend):
+   * - Uses backend API only
+   * - Use when backend is available
+   * - Throws error if backend unavailable
    */
   async login(
     email: string,
@@ -325,40 +326,54 @@ export const authService = {
     userType: UserType
   ): Promise<AuthResponse> {
     // ========================================================================
-    // BACKEND API (ENABLE LATER)
+    // MOCK MODE: Use mock data only
     // ========================================================================
-    // const response = await apiClient.post<AuthResponse>(
-    //   API_ENDPOINTS.AUTH_LOGIN,
-    //   {
-    //     email,
-    //     password,
-    //     userType,
-    //   }
-    // );
-    // return response.data;
+    if (env.DATA_MODE === "mock") {
+      logger.info("[AuthService] Using MOCK mode for login");
+      await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate API delay
 
-    // ========================================================================
-    // MOCK DATA (CURRENT)
-    // ========================================================================
-    await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate API delay
+      const mockUser = findMockUser(email, userType);
 
-    const mockUser = findMockUser(email, userType);
+      if (!mockUser || mockUser.password !== password) {
+        throw new Error("Invalid email or password");
+      }
 
-    if (!mockUser || mockUser.password !== password) {
-      throw new Error("Invalid email or password");
+      const user = createAuthUser(mockUser);
+      const token = generateMockToken();
+      const refreshToken = generateMockToken();
+
+      // Store user profile for session persistence
+      localStorage.setItem(STORAGE_KEYS.USER_PROFILE, JSON.stringify(user));
+
+      return {
+        user,
+        token,
+        refreshToken,
+      };
     }
 
-    const user = createAuthUser(mockUser);
-    const token = generateMockToken();
-    const refreshToken = generateMockToken();
-
-    // Store user profile for session persistence
-    localStorage.setItem(STORAGE_KEYS.USER_PROFILE, JSON.stringify(user));
-
+    // ========================================================================
+    // BACKEND MODE: Use backend API only
+    // ========================================================================
+    logger.info("[AuthService] Using BACKEND mode for login");
+    // Backend expects: { email, password } (no userType)
+    const response = await apiClient.post<BackendAuthResponse>(
+      API_ENDPOINTS.AUTH_LOGIN,
+      {
+        email,
+        password,
+      }
+    );
+    // Backend returns: { message, user: { id, fullName, email }, token }
+    // Transform to AuthResponse format
     return {
-      user,
-      token,
-      refreshToken,
+      user: {
+        id: response.data.user.id,
+        email: response.data.user.email,
+        userType: userType, // Keep userType for frontend compatibility
+        name: response.data.user.fullName,
+      },
+      token: response.data.token,
     };
   },
 
@@ -366,55 +381,182 @@ export const authService = {
    * Login with auto-detection of user type
    * Tries to find user in both user and company types
    *
-   * MOCK: Checks both user types in localStorage
-   * BACKEND: Will use POST /auth/login (backend determines user type)
+   * MOCK MODE (default, VITE_DATA_MODE=mock):
+   * - Checks both user types in localStorage
+   * - Use when backend is not available
+   *
+   * BACKEND MODE (VITE_DATA_MODE=backend):
+   * - Uses backend API only (backend determines user type)
+   * - Use when backend is available
+   * - Throws error if backend unavailable
    */
   async loginAutoDetect(
     email: string,
     password: string
   ): Promise<AuthResponse> {
     // ========================================================================
-    // BACKEND API (ENABLE LATER)
+    // MOCK MODE: Use mock data only
     // ========================================================================
-    // const response = await apiClient.post<AuthResponse>(
-    //   API_ENDPOINTS.AUTH_LOGIN,
-    //   {
-    //     email,
-    //     password,
-    //   }
-    // );
-    // return response.data;
+    if (env.DATA_MODE === "mock") {
+      logger.info("[AuthService] Using MOCK mode for loginAutoDetect");
+      await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate API delay
 
-    // ========================================================================
-    // MOCK DATA (CURRENT)
-    // ========================================================================
-    await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate API delay
+      const mockUser = findMockUserByEmail(email);
 
-    const mockUser = findMockUserByEmail(email);
+      if (!mockUser || mockUser.password !== password) {
+        throw new Error("Invalid email or password");
+      }
 
-    if (!mockUser || mockUser.password !== password) {
-      throw new Error("Invalid email or password");
+      const user = createAuthUser(mockUser);
+      const token = generateMockToken();
+      const refreshToken = generateMockToken();
+
+      // Store user profile for session persistence
+      localStorage.setItem(STORAGE_KEYS.USER_PROFILE, JSON.stringify(user));
+
+      return {
+        user,
+        token,
+        refreshToken,
+      };
     }
 
-    const user = createAuthUser(mockUser);
-    const token = generateMockToken();
-    const refreshToken = generateMockToken();
-
-    // Store user profile for session persistence
-    localStorage.setItem(STORAGE_KEYS.USER_PROFILE, JSON.stringify(user));
-
+    // ========================================================================
+    // BACKEND MODE: Use backend API only
+    // ========================================================================
+    logger.info("[AuthService] Using BACKEND mode for loginAutoDetect");
+    // Backend expects: { email, password } (no userType)
+    const response = await apiClient.post<BackendAuthResponse>(
+      API_ENDPOINTS.AUTH_LOGIN,
+      {
+        email,
+        password,
+      }
+    );
+    
+    // Determine user type by checking if a company exists with matching name
+    // During company registration, we set fullName = companyName, so we can check
+    // if a company exists with name = user.fullName
+    // Also try to access company profile endpoint as a fallback
+    let userType: UserType = "user"; // Default to "user"
+    const userFullName = response.data.user.fullName?.trim() || "";
+    
+    try {
+      logger.info(`[AuthService] Checking if user '${userFullName}' (email: ${response.data.user.email}) is a company...`);
+      
+      // Store token temporarily for company check (token not in localStorage yet)
+      const tempToken = response.data.token;
+      
+      // Method 1: Try to access company profile endpoint (most reliable)
+      // If user can access this, they're definitely a company user
+      try {
+        const companyProfileResponse = await apiClient.get<any>(
+          API_ENDPOINTS.COMPANY_PROFILE,
+          {
+            headers: {
+              Authorization: `Bearer ${tempToken}`,
+            },
+          }
+        );
+        // If we get here without error, user is a company
+        userType = "company";
+        logger.info(`[AuthService] ✅ Company profile accessible! User type set to 'company' (method 1)`);
+      } catch (profileError: any) {
+        // If 404 or 401, user is not a company (or not authenticated as company)
+        if (profileError?.response?.status === 404 || profileError?.response?.status === 401) {
+          logger.info(`[AuthService] Company profile not accessible (${profileError?.response?.status}), trying method 2...`);
+        } else {
+          logger.warn(`[AuthService] Company profile check failed:`, profileError?.message);
+        }
+        
+        // Method 2: Check companies list for matching name
+        if (userType === "user" && userFullName) {
+          try {
+            const companiesResponse = await apiClient.get<any>(
+              API_ENDPOINTS.COMPANIES,
+              {
+                headers: {
+                  Authorization: `Bearer ${tempToken}`,
+                },
+              }
+            );
+            
+            logger.info("[AuthService] Companies response received:", companiesResponse.data);
+            
+            // Extract companies array from response
+            let companies: any[] = [];
+            if (Array.isArray(companiesResponse.data)) {
+              companies = companiesResponse.data;
+            } else if (companiesResponse.data?.data?.items && Array.isArray(companiesResponse.data.data.items)) {
+              // Handle paginated response: { success: true, data: { items: CompanyModel[], ... } }
+              companies = companiesResponse.data.data.items;
+            } else if (companiesResponse.data?.data && Array.isArray(companiesResponse.data.data)) {
+              // Handle wrapped response: { success: true, data: Company[] }
+              companies = companiesResponse.data.data;
+            } else if (companiesResponse.data?.companies && Array.isArray(companiesResponse.data.companies)) {
+              // Handle alternative format: { companies: Company[], total, page, limit }
+              companies = companiesResponse.data.companies;
+            }
+            
+            logger.info(`[AuthService] Found ${companies.length} companies. Checking for match with '${userFullName}'...`);
+            
+            // Check if any company matches the user's fullName (case-insensitive for safety)
+            const matchingCompany = companies.find(
+              (company: any) => {
+                const companyName = (company.name || "").trim();
+                const match = companyName === userFullName || companyName.toLowerCase() === userFullName.toLowerCase();
+                if (match) {
+                  logger.info(`[AuthService] Found matching company: '${companyName}' === '${userFullName}'`);
+                }
+                return match;
+              }
+            );
+            
+            if (matchingCompany) {
+              userType = "company";
+              logger.info(`[AuthService] ✅ Company found! User type set to 'company' (method 2). Company ID: ${matchingCompany.id || matchingCompany._id}`);
+            } else {
+              logger.info(`[AuthService] ❌ No company found matching '${userFullName}'. User type set to 'user'.`);
+              if (companies.length > 0) {
+                logger.info(`[AuthService] Available company names: ${companies.map((c: any) => c.name).join(", ")}`);
+              }
+            }
+          } catch (companiesError: any) {
+            logger.warn("[AuthService] ⚠️ Failed to check companies list:", companiesError?.message || companiesError);
+          }
+        }
+      }
+    } catch (companyCheckError: any) {
+      // If all checks fail, default to "user" (don't fail login)
+      logger.warn("[AuthService] ⚠️ All company checks failed, defaulting to 'user':", companyCheckError?.message || companyCheckError);
+    }
+    
+    logger.info(`[AuthService] Final userType determined: '${userType}' for user '${userFullName}'`);
+    
+    // Backend returns: { message, user: { id, fullName, email }, token }
+    // Transform to AuthResponse format
     return {
-      user,
-      token,
-      refreshToken,
+      user: {
+        id: response.data.user.id,
+        email: response.data.user.email,
+        userType: userType, // Set based on company check
+        name: response.data.user.fullName,
+      },
+      token: response.data.token,
     };
   },
 
   /**
    * Register a new user
    *
-   * MOCK: Stores user in localStorage
-   * BACKEND: Will use POST /auth/register
+   * MOCK MODE (default, VITE_DATA_MODE=mock):
+   * - Stores user in localStorage
+   * - Use when backend is not available
+   *
+   * BACKEND MODE (VITE_DATA_MODE=backend):
+   * - Uses backend API only
+   * - Use when backend is available
+   * - Throws error if backend unavailable
    */
   async register(
     email: string,
@@ -423,557 +565,703 @@ export const authService = {
     name?: string
   ): Promise<AuthResponse> {
     // ========================================================================
-    // BACKEND API (ENABLE LATER)
+    // MOCK MODE: Use mock data only
     // ========================================================================
-    // const response = await apiClient.post<AuthResponse>(
-    //   API_ENDPOINTS.AUTH_REGISTER,
-    //   {
-    //     email,
-    //     password,
-    //     userType,
-    //     name,
-    //   }
-    // );
-    // return response.data;
+    if (env.DATA_MODE === "mock") {
+      logger.info("[AuthService] Using MOCK mode for register");
+      await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate API delay
 
-    // ========================================================================
-    // MOCK DATA (CURRENT)
-    // ========================================================================
-    await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate API delay
+      // Check if user already exists
+      const existingUser = findMockUser(email, userType);
+      if (existingUser) {
+        throw new Error("User with this email already exists");
+      }
 
-    // Check if user already exists
-    const existingUser = findMockUser(email, userType);
-    if (existingUser) {
-      throw new Error("User with this email already exists");
+      // Create new mock user
+      const userId =
+        userType === "user" ? `user_${Date.now()}` : `company_${Date.now()}`;
+      const newUser: MockAuthUser = {
+        email,
+        password,
+        userType,
+        id: userId,
+        name,
+      };
+
+      // Save to localStorage
+      const users = getMockUsers(userType);
+      users.push(newUser);
+      saveMockUsers(userType, users);
+
+      const user = createAuthUser(newUser, name);
+      const token = generateMockToken();
+      const refreshToken = generateMockToken();
+
+      // Store user profile for session persistence
+      localStorage.setItem(STORAGE_KEYS.USER_PROFILE, JSON.stringify(user));
+
+      return {
+        user,
+        token,
+        refreshToken,
+      };
     }
 
-    // Create new mock user
-    const userId =
-      userType === "user" ? `user_${Date.now()}` : `company_${Date.now()}`;
-    const newUser: MockAuthUser = {
-      email,
-      password,
-      userType,
-      id: userId,
-      name,
-    };
-
-    // Save to localStorage
-    const users = getMockUsers(userType);
-    users.push(newUser);
-    saveMockUsers(userType, users);
-
-    const user = createAuthUser(newUser, name);
-    const token = generateMockToken();
-    const refreshToken = generateMockToken();
-
-    // Store user profile for session persistence
-    localStorage.setItem(STORAGE_KEYS.USER_PROFILE, JSON.stringify(user));
-
+    // ========================================================================
+    // BACKEND MODE: Use backend API only
+    // ========================================================================
+    logger.info("[AuthService] Using BACKEND mode for register");
+    // Backend expects: { fullName, email, password }
+    const response = await apiClient.post<BackendAuthResponse>(
+      API_ENDPOINTS.AUTH_REGISTER,
+      {
+        fullName: name || email.split("@")[0], // Backend uses fullName
+        email,
+        password,
+      }
+    );
+    // Backend returns: { message, user: { id, fullName, email }, token }
+    // Transform to AuthResponse format
     return {
-      user,
-      token,
-      refreshToken,
+      user: {
+        id: response.data.user.id,
+        email: response.data.user.email,
+        userType: userType, // Keep userType for frontend compatibility
+        name: response.data.user.fullName,
+      },
+      token: response.data.token,
     };
   },
 
   /**
    * Register a user (creates both user and profile records)
    *
-   * MOCK: Creates user in localStorage and profile record
-   * BACKEND: Will use POST /auth/register/user
+   * MOCK MODE (default, VITE_DATA_MODE=mock):
+   * - Creates user in localStorage and profile record
+   * - Use when backend is not available
+   *
+   * BACKEND MODE (VITE_DATA_MODE=backend):
+   * - Uses backend API only
+   * - Use when backend is available
+   * - Throws error if backend unavailable
    */
   async registerUser(
     data: UserRegistrationData
   ): Promise<AuthResponse> {
     // ========================================================================
-    // BACKEND API (ENABLE LATER)
+    // MOCK MODE: Use mock data only
     // ========================================================================
-    // const response = await apiClient.post<AuthResponse>(
-    //   API_ENDPOINTS.AUTH_REGISTER_USER,
-    //   {
-    //     // User data
-    //     email: data.email,
-    //     password: data.password,
-    //     role: "Seeker",
-    //     firstName: data.firstName,
-    //     lastName: data.lastName,
-    //     phone: data.phone,
-    //     location: data.location,
-    //     isVerified: false,
-    //     savedJobPosts: [],
-    //     // Profile data
-    //     experience: 0,
-    //     qualification: 0,
-    //     skill: 0,
-    //   }
-    // );
-    // return response.data;
+    if (env.DATA_MODE === "mock") {
+      logger.info("[AuthService] Using MOCK mode for registerUser");
+      await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate API delay
 
-    // ========================================================================
-    // MOCK DATA (CURRENT)
-    // ========================================================================
-    await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate API delay
+      // Check if user already exists
+      const existingUser = findMockUser(data.email, "user");
+      if (existingUser) {
+        throw new Error("User with this email already exists");
+      }
 
-    // Check if user already exists
-    const existingUser = findMockUser(data.email, "user");
-    if (existingUser) {
-      throw new Error("User with this email already exists");
-    }
-
-    // Create new mock user
-    const userId = `user_${Date.now()}`;
-    const newUser: MockAuthUser = {
-      email: data.email,
-      password: data.password,
-      userType: "user",
-      id: userId,
-      name: `${data.firstName} ${data.lastName}`,
-    };
-
-    // Save to localStorage
-    const users = getMockUsers("user");
-    users.push(newUser);
-    saveMockUsers("user", users);
-
-    // Create profile record (mock: store in localStorage for now)
-    // In real backend, this would be a separate API call
-    try {
-      const profileData = {
-        id: `profile_${userId}`,
-        user: userId,
-        experience: 0,
-        qualification: 0,
-        skill: 0,
+      // Create new mock user
+      const userId = `user_${Date.now()}`;
+      const newUser: MockAuthUser = {
+        email: data.email,
+        password: data.password,
+        userType: "user",
+        id: userId,
+        name: data.fullName, // ✅ UserRegistrationModel now uses fullName
       };
-      localStorage.setItem(`user_profile_${userId}`, JSON.stringify(profileData));
-    } catch (error) {
-      logger.error("Error storing user profile:", error);
-      // Continue even if profile storage fails
+
+      // Save to localStorage
+      const users = getMockUsers("user");
+      users.push(newUser);
+      saveMockUsers("user", users);
+
+      // Create profile record (mock: store in localStorage for now)
+      // In real backend, this would be a separate API call
+      try {
+        const profileData = {
+          id: `profile_${userId}`,
+          user: userId,
+          experience: 0,
+          qualification: 0,
+          skill: 0,
+        };
+        localStorage.setItem(`user_profile_${userId}`, JSON.stringify(profileData));
+      } catch (error) {
+        logger.error("Error storing user profile:", error);
+        // Continue even if profile storage fails
+      }
+
+      const user = createAuthUser(newUser, data.fullName); // ✅ UserRegistrationModel now uses fullName
+      const token = generateMockToken();
+      const refreshToken = generateMockToken();
+
+      // Store user profile for session persistence
+      localStorage.setItem(STORAGE_KEYS.USER_PROFILE, JSON.stringify(user));
+
+      return {
+        user,
+        token,
+        refreshToken,
+      };
     }
 
-    const user = createAuthUser(newUser, `${data.firstName} ${data.lastName}`);
-    const token = generateMockToken();
-    const refreshToken = generateMockToken();
-
-    // Store user profile for session persistence
-    localStorage.setItem(STORAGE_KEYS.USER_PROFILE, JSON.stringify(user));
-
+    // ========================================================================
+    // BACKEND MODE: Use backend API only
+    // ========================================================================
+    logger.info("[AuthService] Using BACKEND mode for registerUser");
+    // Backend register expects: { fullName, email, password }
+    // Profile is created separately via /api/profiles endpoint
+    const response = await apiClient.post<BackendAuthResponse>(
+      API_ENDPOINTS.AUTH_REGISTER,
+      {
+        fullName: data.fullName, // ✅ UserRegistrationModel now uses fullName
+        email: data.email,
+        password: data.password,
+      }
+    );
+    // Backend returns: { message, user: { id, fullName, email }, token }
+    // Transform to AuthResponse format
     return {
-      user,
-      token,
-      refreshToken,
+      user: {
+        id: response.data.user.id,
+        email: response.data.user.email,
+        userType: "user",
+        name: response.data.user.fullName,
+      },
+      token: response.data.token,
     };
   },
 
   /**
    * Register a company (creates both user and company records)
    *
-   * MOCK: Creates user in localStorage and company profile record
-   * BACKEND: Will use POST /auth/register/company
+   * MOCK MODE (default, VITE_DATA_MODE=mock):
+   * - Creates user in localStorage and company profile record
+   * - Use when backend is not available
+   *
+   * BACKEND MODE (VITE_DATA_MODE=backend):
+   * - Uses backend API only
+   * - Use when backend is available
+   * - Throws error if backend unavailable
    */
   async registerCompany(
     data: CompanyRegistrationData
   ): Promise<AuthResponse> {
     // ========================================================================
-    // BACKEND API (ENABLE LATER)
+    // MOCK MODE: Use mock data only
     // ========================================================================
-    // const response = await apiClient.post<AuthResponse>(
-    //   API_ENDPOINTS.AUTH_REGISTER_COMPANY,
-    //   {
-    //     // User data
-    //     email: data.email,
-    //     password: data.password,
-    //     role: "Company",
-    //     firstName: data.companyName.split(" ")[0] || data.companyName,
-    //     lastName: data.companyName.split(" ").slice(1).join(" ") || "",
-    //     phone: data.phone,
-    //     location: data.location,
-    //     isVerified: false,
-    //     savedJobPosts: [],
-    //     // Company data
-    //     name: data.companyName,
-    //     address: data.address,
-    //     industry: data.industry,
-    //     website: data.website,
-    //     logo: undefined,
-    //     isVerified: false,
-    //   }
-    // );
-    // return response.data;
+    if (env.DATA_MODE === "mock") {
+      logger.info("[AuthService] Using MOCK mode for registerCompany");
+      await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate API delay
 
-    // ========================================================================
-    // MOCK DATA (CURRENT)
-    // ========================================================================
-    await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate API delay
+      // Check if user already exists
+      const existingUser = findMockUser(data.email, "company");
+      if (existingUser) {
+        throw new Error("Company with this email already exists");
+      }
 
-    // Check if user already exists
-    const existingUser = findMockUser(data.email, "company");
-    if (existingUser) {
-      throw new Error("Company with this email already exists");
-    }
-
-    // Create new mock user
-    const userId = `company_${Date.now()}`;
-    const newUser: MockAuthUser = {
-      email: data.email,
-      password: data.password,
-      userType: "company",
-      id: userId,
-      name: data.companyName,
-    };
-
-    // Save to localStorage
-    const users = getMockUsers("company");
-    users.push(newUser);
-    saveMockUsers("company", users);
-
-    // Create company profile record (mock: store in localStorage for now)
-    // In real backend, this would be a separate API call
-    try {
-      // Store company profile data in localStorage
-      // The company service will handle this when the company logs in
-      const companyProfileData = {
+      // Create new mock user
+      const userId = `company_${Date.now()}`;
+      const newUser: MockAuthUser = {
+        email: data.email,
+        password: data.password,
+        userType: "company",
         id: userId,
         name: data.companyName,
-        address: data.address,
-        logo: undefined,
-        isVerified: false,
-        description: "",
-        website: data.website,
-        headquarters: data.address,
-        industry: data.industry,
       };
-      localStorage.setItem(`company_profile_${userId}`, JSON.stringify(companyProfileData));
-    } catch (error) {
-      logger.error("Error creating company profile:", error);
-      // Continue even if profile creation fails
+
+      // Save to localStorage
+      const users = getMockUsers("company");
+      users.push(newUser);
+      saveMockUsers("company", users);
+
+      // Create company profile record (mock: store in localStorage for now)
+      // In real backend, this would be a separate API call
+      try {
+        // Store company profile data in localStorage
+        // The company service will handle this when the company logs in
+        const companyProfileData = {
+          id: userId,
+          name: data.companyName,
+          address: data.address,
+          logo: undefined,
+          isVerified: false,
+          description: "",
+          website: data.website,
+          headquarters: data.address,
+          industry: data.industry,
+        };
+        localStorage.setItem(`company_profile_${userId}`, JSON.stringify(companyProfileData));
+      } catch (error) {
+        logger.error("Error creating company profile:", error);
+        // Continue even if profile creation fails
+      }
+
+      const user = createAuthUser(newUser, data.companyName);
+      const token = generateMockToken();
+      const refreshToken = generateMockToken();
+
+      // Store user profile for session persistence
+      localStorage.setItem(STORAGE_KEYS.USER_PROFILE, JSON.stringify(user));
+
+      return {
+        user,
+        token,
+        refreshToken,
+      };
     }
 
-    const user = createAuthUser(newUser, data.companyName);
-    const token = generateMockToken();
-    const refreshToken = generateMockToken();
-
-    // Store user profile for session persistence
-    localStorage.setItem(STORAGE_KEYS.USER_PROFILE, JSON.stringify(user));
-
+    // ========================================================================
+    // BACKEND MODE: Use backend API only
+    // ========================================================================
+    logger.info("[AuthService] Using BACKEND mode for registerCompany");
+    // Backend: User registration via /api/auth/register, then company creation via /api/companies
+    // Step 1: Register user
+    const userResponse = await apiClient.post<BackendAuthResponse>(
+      API_ENDPOINTS.AUTH_REGISTER,
+      {
+        fullName: data.companyName, // Backend uses fullName
+        email: data.email,
+        password: data.password,
+      }
+    );
+    
+    // Step 2: Create company record
+    // Backend expects: { name, description, location, website?, industry?, ... }
+    // Map form data to backend fields: address → location, companyName → name
+    try {
+      await apiClient.post<{ success: boolean; data: any; message: string }>(
+        API_ENDPOINTS.COMPANIES,
+        {
+          name: data.companyName,
+          description: data.companyName, // Use company name as default description (can be updated later)
+          location: data.location || data.address, // Backend uses location, fallback to address
+          website: data.website || undefined,
+          industry: data.industry || undefined,
+          headquarters: data.address || undefined, // Optional: map address to headquarters
+        }
+      );
+      logger.info("[AuthService] Company record created successfully");
+    } catch (companyError) {
+      // Log error but don't fail registration - user is already created
+      // Company profile can be created/updated later via company profile page
+      logger.warn("[AuthService] Failed to create company record, but user registration succeeded:", companyError);
+    }
+    
+    // Backend returns: { message, user: { id, fullName, email }, token }
+    // Transform to AuthResponse format
     return {
-      user,
-      token,
-      refreshToken,
+      user: {
+        id: userResponse.data.user.id,
+        email: userResponse.data.user.email,
+        userType: "company",
+        name: userResponse.data.user.fullName,
+      },
+      token: userResponse.data.token,
     };
   },
 
   /**
    * Login with Google OAuth
    *
-   * MOCK: Creates or finds user based on Google account
-   * BACKEND: Will use POST /auth/google
+   * MOCK MODE (default, VITE_DATA_MODE=mock):
+   * - Creates or finds user based on Google account
+   * - Use when backend is not available
+   *
+   * BACKEND MODE (VITE_DATA_MODE=backend):
+   * - Uses backend API only
+   * - Use when backend is available
+   * - Throws error if backend unavailable
    */
   async loginWithGoogle(userType: UserType): Promise<AuthResponse> {
     // ========================================================================
-    // BACKEND API (ENABLE LATER)
+    // MOCK MODE: Use mock data only
     // ========================================================================
-    // const response = await apiClient.post<AuthResponse>(
-    //   API_ENDPOINTS.AUTH_GOOGLE,
-    //   {
-    //     userType,
-    //   }
-    // );
-    // return response.data;
+    if (env.DATA_MODE === "mock") {
+      logger.info("[AuthService] Using MOCK mode for loginWithGoogle");
+      await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate API delay
 
-    // ========================================================================
-    // MOCK DATA (CURRENT)
-    // ========================================================================
-    await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate API delay
+      // For mock: Use a default Google email
+      const googleEmail = `google.${userType}@example.com`;
+      let mockUser = findMockUser(googleEmail, userType);
 
-    // For mock: Use a default Google email
-    const googleEmail = `google.${userType}@example.com`;
-    let mockUser = findMockUser(googleEmail, userType);
+      // If user doesn't exist, create one
+      if (!mockUser) {
+        const userId =
+          userType === "user"
+            ? `user_google_${Date.now()}`
+            : `company_google_${Date.now()}`;
+        mockUser = {
+          email: googleEmail,
+          password: "google_oauth", // Not used for Google auth
+          userType,
+          id: userId,
+          name: `Google ${userType === "user" ? "User" : "Company"}`,
+        };
 
-    // If user doesn't exist, create one
-    if (!mockUser) {
-      const userId =
-        userType === "user"
-          ? `user_google_${Date.now()}`
-          : `company_google_${Date.now()}`;
-      mockUser = {
-        email: googleEmail,
-        password: "google_oauth", // Not used for Google auth
-        userType,
-        id: userId,
-        name: `Google ${userType === "user" ? "User" : "Company"}`,
+        const users = getMockUsers(userType);
+        users.push(mockUser);
+        saveMockUsers(userType, users);
+      }
+
+      const user = createAuthUser(mockUser);
+      const token = generateMockToken();
+      const refreshToken = generateMockToken();
+
+      // Store user profile for session persistence
+      localStorage.setItem(STORAGE_KEYS.USER_PROFILE, JSON.stringify(user));
+
+      return {
+        user,
+        token,
+        refreshToken,
       };
-
-      const users = getMockUsers(userType);
-      users.push(mockUser);
-      saveMockUsers(userType, users);
     }
 
-    const user = createAuthUser(mockUser);
-    const token = generateMockToken();
-    const refreshToken = generateMockToken();
-
-    // Store user profile for session persistence
-    localStorage.setItem(STORAGE_KEYS.USER_PROFILE, JSON.stringify(user));
-
-    return {
-      user,
-      token,
-      refreshToken,
-    };
+    // ========================================================================
+    // BACKEND MODE: Use backend API only
+    // ========================================================================
+    logger.info("[AuthService] Using BACKEND mode for loginWithGoogle");
+    const response = await apiClient.post<AuthResponse>(
+      API_ENDPOINTS.AUTH_GOOGLE,
+      {
+        userType,
+      }
+    );
+    return response.data;
   },
 
   /**
    * Login with Google OAuth (auto-detect user type)
    * Tries to find user in both user and company types based on email
    *
-   * MOCK: Checks both user types, creates user if doesn't exist
-   * BACKEND: Will use POST /auth/google (backend determines user type from email)
+   * MOCK MODE (default, VITE_DATA_MODE=mock):
+   * - Checks both user types, creates user if doesn't exist
+   * - Use when backend is not available
+   *
+   * BACKEND MODE (VITE_DATA_MODE=backend):
+   * - Uses backend API only (backend determines user type from email)
+   * - Use when backend is available
+   * - Throws error if backend unavailable
    */
   async loginWithGoogleAutoDetect(email: string, name?: string): Promise<AuthResponse> {
     // ========================================================================
-    // BACKEND API (ENABLE LATER)
+    // MOCK MODE: Use mock data only
     // ========================================================================
-    // const response = await apiClient.post<AuthResponse>(
-    //   API_ENDPOINTS.AUTH_GOOGLE,
-    //   {
-    //     credential, // Google OAuth credential token
-    //   }
-    // );
-    // Backend extracts email from credential and determines user type
-    // return response.data;
+    if (env.DATA_MODE === "mock") {
+      logger.info("[AuthService] Using MOCK mode for loginWithGoogleAutoDetect");
+      await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate API delay
 
-    // ========================================================================
-    // MOCK DATA (CURRENT)
-    // ========================================================================
-    await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate API delay
+      // Try to find existing user (check both user types)
+      let mockUser = findMockUserByEmail(email);
 
-    // Try to find existing user (check both user types)
-    let mockUser = findMockUserByEmail(email);
+      // If user doesn't exist, create one (default to "user" type)
+      if (!mockUser) {
+        const userId = `user_google_${Date.now()}`;
+        mockUser = {
+          email,
+          password: "google_oauth", // Not used for Google auth
+          userType: "user",
+          id: userId,
+          name: name || email.split("@")[0],
+        };
 
-    // If user doesn't exist, create one (default to "user" type)
-    if (!mockUser) {
-      const userId = `user_google_${Date.now()}`;
-      mockUser = {
-        email,
-        password: "google_oauth", // Not used for Google auth
-        userType: "user",
-        id: userId,
-        name: name || email.split("@")[0],
+        const users = getMockUsers("user");
+        users.push(mockUser);
+        saveMockUsers("user", users);
+      }
+
+      const user = createAuthUser(mockUser, name);
+      const token = generateMockToken();
+      const refreshToken = generateMockToken();
+
+      // Store user profile for session persistence
+      localStorage.setItem(STORAGE_KEYS.USER_PROFILE, JSON.stringify(user));
+
+      return {
+        user,
+        token,
+        refreshToken,
       };
-
-      const users = getMockUsers("user");
-      users.push(mockUser);
-      saveMockUsers("user", users);
     }
 
-    const user = createAuthUser(mockUser, name);
-    const token = generateMockToken();
-    const refreshToken = generateMockToken();
-
-    // Store user profile for session persistence
-    localStorage.setItem(STORAGE_KEYS.USER_PROFILE, JSON.stringify(user));
-
-    return {
-      user,
-      token,
-      refreshToken,
-    };
+    // ========================================================================
+    // BACKEND MODE: Use backend API only
+    // ========================================================================
+    logger.info("[AuthService] Using BACKEND mode for loginWithGoogleAutoDetect");
+    const response = await apiClient.post<AuthResponse>(
+      API_ENDPOINTS.AUTH_GOOGLE,
+      {
+        email,
+        name,
+      }
+    );
+    return response.data;
   },
 
   /**
    * Logout
    *
-   * MOCK: No-op (tokens cleared by AuthContext)
-   * BACKEND: Will use POST /auth/logout
+   * MOCK MODE (default, VITE_DATA_MODE=mock):
+   * - No-op (tokens cleared by AuthContext)
+   * - Use when backend is not available
+   *
+   * BACKEND MODE (VITE_DATA_MODE=backend):
+   * - Uses backend API only
+   * - Use when backend is available
+   * - Throws error if backend unavailable
    */
   async logout(): Promise<void> {
     // ========================================================================
-    // BACKEND API (ENABLE LATER)
+    // MOCK MODE: Use mock data only
     // ========================================================================
-    // await apiClient.post(API_ENDPOINTS.AUTH_LOGOUT);
+    if (env.DATA_MODE === "mock") {
+      logger.info("[AuthService] Using MOCK mode for logout");
+      // No-op for mock mode - tokens are cleared by AuthContext
+      await new Promise((resolve) => setTimeout(resolve, 200));
+      return;
+    }
 
     // ========================================================================
-    // MOCK DATA (CURRENT)
+    // BACKEND MODE: Use backend API only
     // ========================================================================
-    // No-op for mock mode - tokens are cleared by AuthContext
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    logger.info("[AuthService] Using BACKEND mode for logout");
+    await apiClient.post(API_ENDPOINTS.AUTH_LOGOUT);
   },
 
   /**
    * Refresh access token
    *
-   * MOCK: Generates new mock token
-   * BACKEND: Will use POST /auth/refresh
+   * MOCK MODE (default, VITE_DATA_MODE=mock):
+   * - Generates new mock token
+   * - Use when backend is not available
+   *
+   * BACKEND MODE (VITE_DATA_MODE=backend):
+   * - Uses backend API only
+   * - Use when backend is available
+   * - Throws error if backend unavailable
    */
   async refreshToken(refreshToken: string): Promise<{ token: string }> {
     // ========================================================================
-    // BACKEND API (ENABLE LATER)
+    // MOCK MODE: Use mock data only
     // ========================================================================
-    // const response = await apiClient.post<{ token: string }>(
-    //   API_ENDPOINTS.AUTH_REFRESH,
-    //   { refreshToken }
-    // );
-    // return response.data;
+    if (env.DATA_MODE === "mock") {
+      logger.info("[AuthService] Using MOCK mode for refreshToken");
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      return { token: generateMockToken() };
+    }
 
     // ========================================================================
-    // MOCK DATA (CURRENT)
+    // BACKEND MODE: Use backend API only
     // ========================================================================
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    return { token: generateMockToken() };
+    logger.info("[AuthService] Using BACKEND mode for refreshToken");
+    // Backend expects: { refreshToken }
+    // Backend returns: { token: string }
+    const response = await apiClient.post<{ token: string }>(
+      API_ENDPOINTS.AUTH_REFRESH,
+      { refreshToken }
+    );
+    return response.data; // Backend returns { token } directly
   },
 
   /**
    * Request password reset
    *
-   * MOCK: No-op (always succeeds)
-   * BACKEND: Will use POST /auth/forgot-password
+   * MOCK MODE (default, VITE_DATA_MODE=mock):
+   * - No-op (always succeeds)
+   * - Use when backend is not available
+   *
+   * BACKEND MODE (VITE_DATA_MODE=backend):
+   * - Uses backend API only
+   * - Use when backend is available
+   * - Throws error if backend unavailable
    */
   async forgotPassword(email: string): Promise<{ message: string }> {
     // ========================================================================
-    // BACKEND API (ENABLE LATER)
+    // MOCK MODE: Use mock data only
     // ========================================================================
-    // const response = await apiClient.post<{ message: string }>(
-    //   API_ENDPOINTS.AUTH_FORGOT_PASSWORD,
-    //   { email }
-    // );
-    // return response.data;
+    if (env.DATA_MODE === "mock") {
+      logger.info("[AuthService] Using MOCK mode for forgotPassword");
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      return {
+        message:
+          "Password reset email sent (mock mode - check console for instructions)",
+      };
+    }
 
     // ========================================================================
-    // MOCK DATA (CURRENT)
+    // BACKEND MODE: Use backend API only
     // ========================================================================
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    return {
-      message:
-        "Password reset email sent (mock mode - check console for instructions)",
-    };
+    logger.info("[AuthService] Using BACKEND mode for forgotPassword");
+    // Backend expects: { email }
+    // Backend returns: { message: string }
+    const response = await apiClient.post<{ message: string }>(
+      API_ENDPOINTS.AUTH_FORGOT_PASSWORD,
+      { email }
+    );
+    return response.data; // Backend returns { message } directly
   },
 
   /**
    * Reset password with token
    *
-   * MOCK: Updates password in localStorage
-   * BACKEND: Will use POST /auth/reset-password
+   * MOCK MODE (default, VITE_DATA_MODE=mock):
+   * - Updates password in localStorage
+   * - Use when backend is not available
+   *
+   * BACKEND MODE (VITE_DATA_MODE=backend):
+   * - Uses backend API only
+   * - Use when backend is available
+   * - Throws error if backend unavailable
    */
   async resetPassword(
     token: string,
     newPassword: string
   ): Promise<{ message: string }> {
     // ========================================================================
-    // BACKEND API (ENABLE LATER)
+    // MOCK MODE: Use mock data only
     // ========================================================================
-    // const response = await apiClient.post<{ message: string }>(
-    //   API_ENDPOINTS.AUTH_RESET_PASSWORD,
-    //   { token, newPassword }
-    // );
-    // return response.data;
+    if (env.DATA_MODE === "mock") {
+      logger.info("[AuthService] Using MOCK mode for resetPassword");
+      await new Promise((resolve) => setTimeout(resolve, 300));
+
+      logger.warn(
+        "Password reset in mock mode - token validation not implemented"
+      );
+
+      return {
+        message: "Password reset successful (mock mode)",
+      };
+    }
 
     // ========================================================================
-    // MOCK DATA (CURRENT)
+    // BACKEND MODE: Use backend API only
     // ========================================================================
-    await new Promise((resolve) => setTimeout(resolve, 300));
-
-    logger.warn(
-      "Password reset in mock mode - token validation not implemented"
+    logger.info("[AuthService] Using BACKEND mode for resetPassword");
+    // Backend expects: { token, newPassword }
+    // Backend returns: { message: string }
+    const response = await apiClient.post<{ message: string }>(
+      API_ENDPOINTS.AUTH_RESET_PASSWORD,
+      { token, newPassword }
     );
-
-    return {
-      message: "Password reset successful (mock mode)",
-    };
+    return response.data; // Backend returns { message } directly
   },
 
   /**
    * Change password (authenticated user)
    *
-   * MOCK: Updates password in localStorage
-   * BACKEND: Will use POST /auth/change-password
+   * MOCK MODE (default, VITE_DATA_MODE=mock):
+   * - Updates password in localStorage
+   * - Use when backend is not available
+   *
+   * BACKEND MODE (VITE_DATA_MODE=backend):
+   * - Uses backend API only
+   * - Use when backend is available
+   * - Throws error if backend unavailable
    */
   async changePassword(
     currentPassword: string,
     newPassword: string
   ): Promise<{ message: string }> {
     // ========================================================================
-    // BACKEND API (ENABLE LATER)
+    // MOCK MODE: Use mock data only
     // ========================================================================
-    // const response = await apiClient.post<{ message: string }>(
-    //   API_ENDPOINTS.AUTH_CHANGE_PASSWORD,
-    //   { currentPassword, newPassword }
-    // );
-    // return response.data;
+    if (env.DATA_MODE === "mock") {
+      logger.info("[AuthService] Using MOCK mode for changePassword");
+      await new Promise((resolve) => setTimeout(resolve, 300));
 
-    // ========================================================================
-    // MOCK DATA (CURRENT)
-    // ========================================================================
-    await new Promise((resolve) => setTimeout(resolve, 300));
+      // Get current user from localStorage
+      try {
+        const storedUser = localStorage.getItem(STORAGE_KEYS.USER_PROFILE);
+        if (storedUser) {
+          const user: AuthUser = JSON.parse(storedUser);
+          const mockUser = findMockUser(user.email, user.userType);
 
-    // Get current user from localStorage
-    try {
-      const storedUser = localStorage.getItem(STORAGE_KEYS.USER_PROFILE);
-      if (storedUser) {
-        const user: AuthUser = JSON.parse(storedUser);
-        const mockUser = findMockUser(user.email, user.userType);
-
-        if (mockUser && mockUser.password === currentPassword) {
-          // Update password
-          mockUser.password = newPassword;
-          const users = getMockUsers(user.userType);
-          const userIndex = users.findIndex((u) => u.id === mockUser.id);
-          if (userIndex !== -1) {
-            users[userIndex] = mockUser;
-            saveMockUsers(user.userType, users);
+          if (mockUser && mockUser.password === currentPassword) {
+            // Update password
+            mockUser.password = newPassword;
+            const users = getMockUsers(user.userType);
+            const userIndex = users.findIndex((u) => u.id === mockUser.id);
+            if (userIndex !== -1) {
+              users[userIndex] = mockUser;
+              saveMockUsers(user.userType, users);
+            }
+          } else {
+            throw new Error("Current password is incorrect");
           }
-        } else {
-          throw new Error("Current password is incorrect");
         }
+      } catch (error) {
+        logger.error("Error changing password:", error);
+        throw new Error("Failed to change password");
       }
-    } catch (error) {
-      logger.error("Error changing password:", error);
-      throw new Error("Failed to change password");
+
+      return {
+        message: "Password changed successfully (mock mode)",
+      };
     }
 
-    return {
-      message: "Password changed successfully (mock mode)",
-    };
+    // ========================================================================
+    // BACKEND MODE: Use backend API only
+    // ========================================================================
+    logger.info("[AuthService] Using BACKEND mode for changePassword");
+    // Backend expects: { currentPassword, newPassword }
+    // Backend returns: { message: string }
+    // NOTE: Backend extracts userId from JWT token (req.user.userId)
+    const response = await apiClient.post<{ message: string }>(
+      API_ENDPOINTS.AUTH_CHANGE_PASSWORD,
+      { currentPassword, newPassword }
+    );
+    return response.data; // Backend returns { message } directly
   },
 
   /**
    * Delete user account
    *
-   * MOCK: Removes user from localStorage
-   * BACKEND: Will use DELETE /auth/account
+   * MOCK MODE (default, VITE_DATA_MODE=mock):
+   * - Removes user from localStorage
+   * - Use when backend is not available
+   *
+   * BACKEND MODE (VITE_DATA_MODE=backend):
+   * - Uses backend API only
+   * - Use when backend is available
+   * - Throws error if backend unavailable
    */
   async deleteAccount(): Promise<{ message: string }> {
     // ========================================================================
-    // BACKEND API (ENABLE LATER)
+    // MOCK MODE: Use mock data only
     // ========================================================================
-    // const response = await apiClient.delete<{ message: string }>(
-    //   API_ENDPOINTS.AUTH_DELETE_ACCOUNT
-    // );
-    // return response.data;
+    if (env.DATA_MODE === "mock") {
+      logger.info("[AuthService] Using MOCK mode for deleteAccount");
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
-    // ========================================================================
-    // MOCK DATA (CURRENT)
-    // ========================================================================
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    // Get current user from localStorage
-    try {
-      const storedUser = localStorage.getItem(STORAGE_KEYS.USER_PROFILE);
-      if (storedUser) {
-        const user: AuthUser = JSON.parse(storedUser);
-        const users = getMockUsers(user.userType);
-        const filteredUsers = users.filter((u) => u.id !== user.id);
-        saveMockUsers(user.userType, filteredUsers);
+      // Get current user from localStorage
+      try {
+        const storedUser = localStorage.getItem(STORAGE_KEYS.USER_PROFILE);
+        if (storedUser) {
+          const user: AuthUser = JSON.parse(storedUser);
+          const users = getMockUsers(user.userType);
+          const filteredUsers = users.filter((u) => u.id !== user.id);
+          saveMockUsers(user.userType, filteredUsers);
+        }
+      } catch (error) {
+        logger.error("Error deleting account:", error);
+        throw new Error("Failed to delete account");
       }
-    } catch (error) {
-      logger.error("Error deleting account:", error);
-      throw new Error("Failed to delete account");
+
+      return {
+        message: "Account deleted successfully (mock mode)",
+      };
     }
 
-    return {
-      message: "Account deleted successfully (mock mode)",
-    };
+    // ========================================================================
+    // BACKEND MODE: Use backend API only
+    // ========================================================================
+    logger.info("[AuthService] Using BACKEND mode for deleteAccount");
+    const response = await apiClient.delete<{ message: string }>(
+      API_ENDPOINTS.AUTH_DELETE_ACCOUNT
+    );
+    return response.data;
   },
 };
 

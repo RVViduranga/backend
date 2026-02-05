@@ -6,7 +6,7 @@ import {
   transformCompanyToDetailModel,
   normalizeCompanyData,
 } from './company-transformers';
-import type { CompanyModel, CompanyDetailModel } from '@/models/company';
+import type { CompanyModel, CompanyDetailModel } from '@/models/companies';
 
 describe('transformCompanyToDetailModel', () => {
   it('should transform CompanyModel to CompanyDetailModel', () => {

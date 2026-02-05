@@ -40,14 +40,9 @@ describe('authService.login', () => {
   it('should login successfully with valid credentials', async () => {
     // Setup: Register a user first
     await authService.registerUser({
-      firstName: 'John',
-      lastName: 'Doe',
+      fullName: 'John Doe',
       email: 'test@example.com',
       password: 'Password123',
-      confirmPassword: 'Password123',
-      phone: '1234567890',
-      location: 'Colombo',
-      agreeToTerms: true,
     });
 
     // Test login
@@ -72,14 +67,9 @@ describe('authService.login', () => {
   it('should throw error with invalid password', async () => {
     // Setup: Register a user first
     await authService.registerUser({
-      firstName: 'John',
-      lastName: 'Doe',
+      fullName: 'John Doe',
       email: 'test@example.com',
       password: 'Password123',
-      confirmPassword: 'Password123',
-      phone: '1234567890',
-      location: 'Colombo',
-      agreeToTerms: true,
     });
 
     // Test with wrong password
@@ -93,14 +83,9 @@ describe('authService.loginAutoDetect', () => {
   it('should login successfully with auto-detection', async () => {
     // Setup: Register a user first
     await authService.registerUser({
-      firstName: 'John',
-      lastName: 'Doe',
+      fullName: 'John Doe',
       email: 'test@example.com',
       password: 'Password123',
-      confirmPassword: 'Password123',
-      phone: '1234567890',
-      location: 'Colombo',
-      agreeToTerms: true,
     });
 
     // Test auto-detect login
@@ -121,14 +106,9 @@ describe('authService.loginAutoDetect', () => {
 describe('authService.register', () => {
   it('should register a new user successfully', async () => {
     const result = await authService.registerUser({
-      firstName: 'Jane',
-      lastName: 'Smith',
+      fullName: 'Jane Smith',
       email: 'newuser@example.com',
       password: 'Password123',
-      confirmPassword: 'Password123',
-      phone: '9876543210',
-      location: 'Kandy',
-      agreeToTerms: true,
     });
 
     expect(result.user).toBeDefined();
@@ -143,27 +123,17 @@ describe('authService.register', () => {
   it('should throw error if email already exists', async () => {
     // Register first user
     await authService.registerUser({
-      firstName: 'John',
-      lastName: 'Doe',
+      fullName: 'John Doe',
       email: 'existing@example.com',
       password: 'Password123',
-      confirmPassword: 'Password123',
-      phone: '1234567890',
-      location: 'Colombo',
-      agreeToTerms: true,
     });
 
     // Try to register again with same email
     await expect(
       authService.registerUser({
-        firstName: 'Jane',
-        lastName: 'Smith',
+        fullName: 'Jane Smith',
         email: 'existing@example.com',
         password: 'Password123',
-        confirmPassword: 'Password123',
-        phone: '9876543210',
-        location: 'Kandy',
-        agreeToTerms: true,
       })
     ).rejects.toThrow('User with this email already exists');
   });
@@ -180,7 +150,6 @@ describe('authService.registerCompany', () => {
       location: 'Colombo',
       email: 'company@testcompany.com',
       password: 'Password123',
-      confirmPassword: 'Password123',
     });
 
     expect(result.user).toBeDefined();
@@ -199,7 +168,6 @@ describe('authService.registerCompany', () => {
       location: 'Colombo',
       email: 'existing@company.com',
       password: 'Password123',
-      confirmPassword: 'Password123',
     });
 
     // Try to register again with same email
@@ -213,7 +181,6 @@ describe('authService.registerCompany', () => {
         location: 'Kandy',
         email: 'existing@company.com',
         password: 'Password123',
-        confirmPassword: 'Password123',
       })
     ).rejects.toThrow('Company with this email already exists');
   });
@@ -223,14 +190,9 @@ describe('authService.logout', () => {
   it('should logout successfully', async () => {
     // Setup: Login first
     await authService.registerUser({
-      firstName: 'John',
-      lastName: 'Doe',
+      fullName: 'John Doe',
       email: 'test@example.com',
       password: 'Password123',
-      confirmPassword: 'Password123',
-      phone: '1234567890',
-      location: 'Colombo',
-      agreeToTerms: true,
     });
 
     // Verify user is stored
@@ -245,14 +207,9 @@ describe('authService.changePassword', () => {
   it('should change password successfully', async () => {
     // Setup: Register and login (user is stored in localStorage)
     await authService.registerUser({
-      firstName: 'John',
-      lastName: 'Doe',
+      fullName: 'John Doe',
       email: 'test@example.com',
       password: 'OldPassword123',
-      confirmPassword: 'OldPassword123',
-      phone: '1234567890',
-      location: 'Colombo',
-      agreeToTerms: true,
     });
 
     // Test password change (user is already logged in from registerUser)
@@ -268,14 +225,9 @@ describe('authService.changePassword', () => {
 
   it('should throw error if current password is incorrect', async () => {
     await authService.registerUser({
-      firstName: 'John',
-      lastName: 'Doe',
+      fullName: 'John Doe',
       email: 'test@example.com',
       password: 'OldPassword123',
-      confirmPassword: 'OldPassword123',
-      phone: '1234567890',
-      location: 'Colombo',
-      agreeToTerms: true,
     });
 
     await expect(
@@ -288,14 +240,9 @@ describe('authService.forgotPassword', () => {
   it('should send password reset email', async () => {
     // Setup: Register a user
     await authService.registerUser({
-      firstName: 'John',
-      lastName: 'Doe',
+      fullName: 'John Doe',
       email: 'test@example.com',
       password: 'Password123',
-      confirmPassword: 'Password123',
-      phone: '1234567890',
-      location: 'Colombo',
-      agreeToTerms: true,
     });
 
     // Test forgot password
@@ -312,14 +259,9 @@ describe('authService.deleteAccount', () => {
   it('should delete account successfully', async () => {
     // Setup: Register and login (user is stored in localStorage)
     await authService.registerUser({
-      firstName: 'John',
-      lastName: 'Doe',
+      fullName: 'John Doe',
       email: 'test@example.com',
       password: 'Password123',
-      confirmPassword: 'Password123',
-      phone: '1234567890',
-      location: 'Colombo',
-      agreeToTerms: true,
     });
 
     // Verify user exists

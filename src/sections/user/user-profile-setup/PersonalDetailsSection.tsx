@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import SafeIcon from '@/components/common/safe-icon'
-import type { UserProfileModel } from '@/models/user-profile'
+import type { UserProfileModel } from '@/models/profiles'
 
 interface PersonalDetailsSectionProps {
   data: UserProfileModel

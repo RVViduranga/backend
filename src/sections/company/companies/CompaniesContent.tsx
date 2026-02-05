@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import type { CompanyDetailModel } from "@/models/company";
+import type { CompanyDetailModel } from "@/models/companies";
 import CompaniesSearchBar from "./CompaniesSearchBar";
 import CompaniesFilterSidebar from "./CompaniesFilterSidebar";
 import CompaniesResultsHeader from "./CompaniesResultsHeader";
@@ -249,7 +249,7 @@ export default function CompaniesContent() {
                           totalApplicationsReceived:
                             (c as unknown as { totalApplicationsReceived?: number })
                               .totalApplicationsReceived || 0,
-                        })) as import("@/models/company").CompanySummaryModel[]
+                        })) as import("@/models/companies").CompanySummaryModel[]
                       }
                       viewMode={viewMode}
                     />

@@ -10,8 +10,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useCompany } from "@/hooks/use-company-context";
 import { useAuth } from "@/hooks/use-auth-context";
 import companyService from "@/services/company";
-import type { JobDetailModel } from "@/models/job";
-import type { JobPostInputModel } from "@/models/job-data-forms";
+import type { JobDetailModel, JobPostInputModel } from "@/models/jobPosts";
 import { logger } from "@/lib/logger";
 import { transformFormDataToJobDetail } from "@/utils/jobTransform";
 import {

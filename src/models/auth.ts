@@ -1,12 +1,8 @@
 /**
- * Auth Data - Type Definitions and Static Configuration
- *
- * FOLDER STRUCTURE:
- * - src/data/     → Type definitions + Static config (this file)
- * - src/mocks/    → All mock data (centralized in @/mocks)
- * - src/types/    → New centralized types (gradual migration target)
- *
- * NOTE: This file contains authentication-related types and static configuration.
+ * Auth Model - Authentication & Registration Types
+ * 
+ * This model contains types for authentication, registration, and login forms.
+ * Static configuration objects are in @/constants/app.ts
  */
 
 // ============================================================================
@@ -43,6 +39,3 @@ export interface UserSignupModel {
   password: string;
   confirmPassword: string;
 }
-        
-      
-      

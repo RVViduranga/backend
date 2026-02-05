@@ -5,8 +5,10 @@
  * for UI convenience while maintaining backend alignment.
  */
 
-import type { UserModel } from "@/models/user";
-import type { ProfileModel, UserProfileViewModel, EducationModel, ExperienceModel } from "@/models/user-profile";
+import type { UserModel } from "@/models/users";
+import type { ProfileModel, UserProfileViewModel } from "@/models/profiles";
+import type { EducationModel } from "@/models/education";
+import type { ExperienceModel } from "@/models/experience";
 
 /**
  * Compose UserProfileViewModel from UserModel and ProfileModel
@@ -23,8 +25,8 @@ export function composeUserProfileViewModel(
   education?: EducationModel[],
   experienceHistory?: ExperienceModel[]
 ): UserProfileViewModel {
-  // Compute fullName from firstName + lastName
-  const fullName = `${user.firstName} ${user.lastName}`.trim();
+  // Backend UserModel already has fullName
+  const fullName = user.fullName || "";
   
   // Compute displayName (fallback to email if name is empty)
   const displayName = fullName || user.email;
@@ -32,8 +34,8 @@ export function composeUserProfileViewModel(
   // Compute profileCompletion (0-100)
   const profileCompletion = calculateProfileCompletion(user, profile);
   
-  // Compute cvUploaded from profile.cv existence
-  const cvUploaded = !!profile?.cv;
+  // Compute cvUploaded from profile.cvUploaded field
+  const cvUploaded = profile?.cvUploaded || false;
   
   return {
     user,
@@ -45,8 +47,8 @@ export function composeUserProfileViewModel(
     experienceHistory: experienceHistory || [],
     cvUploaded,
     // UI-specific fields (can be populated from profile or user)
-    headline: undefined, // May come from profile or separate field
-    avatarUrl: undefined, // May come from profile or user
+    headline: profile?.headline,
+    avatarUrl: profile?.avatarUrl,
   };
 }
 
@@ -59,20 +61,19 @@ export function composeUserProfileViewModel(
  */
 function calculateProfileCompletion(user: UserModel, profile?: ProfileModel): number {
   let completedFields = 0;
-  const totalFields = 8; // Adjust based on required fields
+  const totalFields = 7; // Adjust based on required fields
   
   // User fields
-  if (user.firstName) completedFields++;
-  if (user.lastName) completedFields++;
+  if (user.fullName) completedFields++; // ✅ Backend uses fullName
   if (user.email) completedFields++;
-  if (user.phone) completedFields++;
-  if (user.location) completedFields++;
   
   // Profile fields
-  if (profile?.cv) completedFields++;
-  if (profile?.experience !== undefined && profile.experience > 0) completedFields++;
-  if (profile?.qualification !== undefined && profile.qualification > 0) completedFields++;
-  if (profile?.skill !== undefined && profile.skill > 0) completedFields++;
+  if (profile?.phone) completedFields++;
+  if (profile?.location) completedFields++;
+  if (profile?.headline) completedFields++;
+  if (profile?.cvUploaded) completedFields++;
+  if (profile?.education && profile.education.length > 0) completedFields++;
+  if (profile?.experience && profile.experience.length > 0) completedFields++;
   
   return Math.round((completedFields / totalFields) * 100);
 }
@@ -97,22 +98,12 @@ export function transformLegacyUserProfileModel(
     experience: ExperienceModel[];
   }
 ): UserProfileViewModel {
-  // Split fullName into firstName and lastName
-  const nameParts = legacy.fullName.split(" ");
-  const firstName = nameParts[0] || "";
-  const lastName = nameParts.slice(1).join(" ") || "";
-  
+  // Backend UserModel uses fullName directly
   // Create UserModel from legacy data
   const user: UserModel = {
     id: legacy.id,
+    fullName: legacy.fullName, // ✅ Backend uses fullName
     email: legacy.email,
-    role: "Seeker", // Default, should come from backend
-    firstName,
-    lastName,
-    phone: legacy.phone,
-    location: legacy.location,
-    isVerified: false, // Default, should come from backend
-    savedJobPosts: [], // Default, should come from backend
   };
   
   // Create ProfileModel from legacy data (if CV exists)

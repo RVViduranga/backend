@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import SafeIcon from "@/components/common/safe-icon";
 import { toast } from "sonner";
-import type { ExperienceModel } from "@/models/user-profile";
+import type { ExperienceModel } from "@/models/experience";
 
 interface ExperienceSectionProps {
   experience: ExperienceModel[];

@@ -7,9 +7,9 @@ import type {
   DashboardStatModel,
   ProfileManagementLinkModel,
   PersonalDetailsLinkModel,
-} from "@/models/user-profile";
+} from "@/models/profiles";
 import type { NavigationLinkModel } from "@/models/site-data";
-import type { DashboardLinkModel } from "@/models/company";
+import type { DashboardLinkModel } from "@/models/companies";
 
 // Re-export types for convenience
 export type {

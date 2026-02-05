@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import SafeIcon from "@/components/common/safe-icon";
 import { useCompany } from "@/hooks/use-company-context";
 import { formatRelativeDate } from "@/utils/date";
-import type { ApplicationStatus } from "@/models/application";
+import type { ApplicationStatus } from "@/models/applications";
 import { useMemo } from "react";
 
 export default function RecentApplicationsCard() {
@@ -25,16 +25,18 @@ export default function RecentApplicationsCard() {
 
   const getStatusColor = (status: ApplicationStatus) => {
     switch (status) {
+      case "Accepted":
       case "accepted":
         return "bg-green-100 text-green-800";
-      case "interview":
-        return "bg-blue-100 text-blue-800";
-      case "shortlisted":
-        return "bg-purple-100 text-purple-800";
+      case "Reviewed":
       case "reviewing":
+      case "interview":
+      case "shortlisted":
         return "bg-yellow-100 text-yellow-800";
+      case "Pending":
       case "pending":
         return "bg-gray-100 text-gray-800";
+      case "Rejected":
       case "rejected":
         return "bg-red-100 text-red-800";
       default:
@@ -44,16 +46,18 @@ export default function RecentApplicationsCard() {
 
   const getStatusIcon = (status: ApplicationStatus) => {
     switch (status) {
+      case "Accepted":
       case "accepted":
         return "CheckCircle";
-      case "interview":
-        return "Calendar";
-      case "shortlisted":
-        return "Star";
+      case "Reviewed":
       case "reviewing":
+      case "interview":
+      case "shortlisted":
         return "Clock";
+      case "Pending":
       case "pending":
         return "Circle";
+      case "Rejected":
       case "rejected":
         return "XCircle";
       default:
@@ -62,7 +66,7 @@ export default function RecentApplicationsCard() {
   };
 
   const pendingCount = recentApplications.filter(
-    (app) => app.status === "pending" || app.status === "reviewing"
+    (app) => app.status === "Pending" || app.status === "Reviewed"
   ).length;
 
   return (

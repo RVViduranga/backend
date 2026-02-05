@@ -29,10 +29,7 @@ export default function EmailSignupForm() {
   const form = useForm<EmailSignupInput>({
     resolver: zodResolver(emailSignupSchema),
     defaultValues: {
-      firstName: "", // ✅ Added
-      lastName: "", // ✅ Added
-      phone: "", // ✅ Added
-      location: "", // ✅ Added
+      fullName: "", // ✅ Backend uses fullName
       email: "",
       password: "",
       confirmPassword: "",
@@ -50,12 +47,9 @@ export default function EmailSignupForm() {
 
   const onSubmit = async (data: EmailSignupInput) => {
     try {
-      // Use registerUser for full user registration with all fields
+      // Use registerUser for full user registration - backend expects fullName
       await registerUser({
-        firstName: data.firstName,
-        lastName: data.lastName,
-        phone: data.phone,
-        location: data.location,
+        fullName: data.fullName,
         email: data.email,
         password: data.password,
       });
@@ -63,10 +57,25 @@ export default function EmailSignupForm() {
       setTimeout(() => {
         navigate("/user-profile-setup", { replace: true });
       }, 500);
-    } catch (error) {
-      toast.error("Registration failed. Please try again.");
+    } catch (error: any) {
+      // Extract error message from API response or use default
+      let errorMessage = "Registration failed. Please try again.";
+      
+      if (error?.response?.data?.message) {
+        // Backend returned an error message
+        errorMessage = error.response.data.message;
+      } else if (error?.message) {
+        // Error object has a message
+        errorMessage = error.message;
+      } else if (error?.code === "ERR_NETWORK" || error?.message?.includes("Network Error")) {
+        // Network error - backend not running
+        errorMessage = "Cannot connect to server. Please ensure the backend server is running.";
+      }
+      
+      console.error("Registration error:", error);
+      toast.error(errorMessage);
       form.setError("root", {
-        message: "Registration failed. Please try again.",
+        message: errorMessage,
       });
     }
   };
@@ -82,77 +91,17 @@ export default function EmailSignupForm() {
           </Alert>
         )}
 
-        {/* First Name Field */}
+        {/* Full Name Field */}
         <FormField
           control={form.control}
-          name="firstName"
+          name="fullName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>First Name</FormLabel>
+              <FormLabel>Full Name</FormLabel>
               <FormControl>
                 <Input
                   type="text"
-                  placeholder="John"
-                  disabled={isSubmitting || authLoading}
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* Last Name Field */}
-        <FormField
-          control={form.control}
-          name="lastName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Last Name</FormLabel>
-              <FormControl>
-                <Input
-                  type="text"
-                  placeholder="Doe"
-                  disabled={isSubmitting || authLoading}
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* Phone Field */}
-        <FormField
-          control={form.control}
-          name="phone"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Phone Number</FormLabel>
-              <FormControl>
-                <Input
-                  type="tel"
-                  placeholder="+94 11 234 5678"
-                  disabled={isSubmitting || authLoading}
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* Location Field */}
-        <FormField
-          control={form.control}
-          name="location"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Location</FormLabel>
-              <FormControl>
-                <Input
-                  type="text"
-                  placeholder="Colombo, Sri Lanka"
+                  placeholder="John Doe"
                   disabled={isSubmitting || authLoading}
                   {...field}
                 />

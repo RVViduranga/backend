@@ -88,9 +88,8 @@ describe('companyService.getProfile', () => {
       address: '123 Main St',
       phone: '1234567890',
       location: 'Colombo',
-      email: 'company@test.com',
+      email: `company-profile-${Date.now()}@test.com`,
       password: 'Password123',
-      confirmPassword: 'Password123',
     });
 
     // Test getProfile
@@ -119,9 +118,8 @@ describe('companyService.updateProfile', () => {
       address: '123 Main St',
       phone: '1234567890',
       location: 'Colombo',
-      email: 'company@test.com',
+      email: `company-update-${Date.now()}@test.com`,
       password: 'Password123',
-      confirmPassword: 'Password123',
     });
 
     // Test updateProfile
@@ -145,9 +143,8 @@ describe('companyService.updateProfile', () => {
       address: '123 Main St',
       phone: '1234567890',
       location: 'Colombo',
-      email: 'company@test.com',
+      email: `company-headquarters-${Date.now()}@test.com`,
       password: 'Password123',
-      confirmPassword: 'Password123',
     });
 
     // Test updateProfile with headquarters (legacy field)
@@ -159,7 +156,7 @@ describe('companyService.updateProfile', () => {
   });
 });
 
-describe('companyService.getCompanyJobs', () => {
+describe('companyService.getJobs', () => {
   it('should get company jobs', async () => {
     // Setup: Register and login as company
     const authResult = await authService.registerCompany({
@@ -169,19 +166,20 @@ describe('companyService.getCompanyJobs', () => {
       address: '123 Main St',
       phone: '1234567890',
       location: 'Colombo',
-      email: 'company@test.com',
+      email: `company-jobs-${Date.now()}@test.com`,
       password: 'Password123',
-      confirmPassword: 'Password123',
     });
 
-    // Test getCompanyJobs
-    const jobs = await companyService.getCompanyJobs(authResult.user.id);
+    // Test getJobs
+    const result = await companyService.getJobs();
 
-    expect(Array.isArray(jobs)).toBe(true);
+    expect(result).toBeDefined();
+    expect(result.jobs).toBeDefined();
+    expect(Array.isArray(result.jobs)).toBe(true);
   });
 });
 
-describe('companyService.getCompanyApplications', () => {
+describe('companyService.getApplications', () => {
   it('should get company applications', async () => {
     // Setup: Register and login as company
     const authResult = await authService.registerCompany({
@@ -191,13 +189,12 @@ describe('companyService.getCompanyApplications', () => {
       address: '123 Main St',
       phone: '1234567890',
       location: 'Colombo',
-      email: 'company@test.com',
+      email: `company-apps-${Date.now()}@test.com`,
       password: 'Password123',
-      confirmPassword: 'Password123',
     });
 
-    // Test getCompanyApplications
-    const result = await companyService.getCompanyApplications(authResult.user.id);
+    // Test getApplications
+    const result = await companyService.getApplications();
 
     expect(result.applications).toBeDefined();
     expect(Array.isArray(result.applications)).toBe(true);
@@ -212,13 +209,12 @@ describe('companyService.getCompanyApplications', () => {
       address: '123 Main St',
       phone: '1234567890',
       location: 'Colombo',
-      email: 'company@test.com',
+      email: `company-filter-${Date.now()}@test.com`,
       password: 'Password123',
-      confirmPassword: 'Password123',
     });
 
-    // Test getCompanyApplications with job filter
-    const result = await companyService.getCompanyApplications(authResult.user.id, {
+    // Test getApplications with job filter
+    const result = await companyService.getApplications({
       jobId: 'job_001',
     });
 

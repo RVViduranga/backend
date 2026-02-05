@@ -24,7 +24,7 @@ import { useCompany } from "@/hooks/use-company-context";
 import { formatRelativeDate } from "@/utils/date";
 import { Loader2 } from "lucide-react";
 import { useMemo, useState } from "react";
-import type { ApplicationStatus } from "@/models/application";
+import type { ApplicationStatus } from "@/models/applications";
 import companyService from "@/services/company";
 import { toast } from "sonner";
 import {
@@ -220,7 +220,7 @@ export default function CompanyApplicationDetailPage() {
                       </p>
                       <p className="font-medium flex items-center gap-2 mt-1">
                         <SafeIcon name="Clock" size={16} />
-                        {formatRelativeDate(application.date || (application as any).appliedDate || "")}
+                        {formatRelativeDate(application.appliedAt || (application as any).date || (application as any).appliedDate || "")} {/* ✅ Backend uses appliedAt */}
                       </p>
                     </div>
                     <div>
@@ -265,10 +265,10 @@ export default function CompanyApplicationDetailPage() {
                   <CardTitle>Resume / CV</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {application.cvUrl ? (
+                  {application.cvFilePath ? ( {/* ✅ Backend uses cvFilePath */}
                     <Button asChild>
                       <a
-                        href={application.cvUrl}
+                        href={application.cvFilePath || (application as any).cvUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -301,7 +301,7 @@ export default function CompanyApplicationDetailPage() {
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <Button variant="outline" className="w-full" asChild>
-                    <Link to={`/jobs/${application.jobPost || (application as any).jobId || ""}`}>
+                    <Link to={`/jobs/${application.job || (application as any).jobPost || (application as any).jobId || ""}`}> {/* ✅ Backend uses job */}
                       <SafeIcon name="Eye" size={16} className="mr-2" />
                       View Job Posting
                     </Link>

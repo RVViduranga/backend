@@ -15,7 +15,7 @@ import React, {
 import { useAuth } from "@/hooks/use-auth-context";
 import { useUserApplicationsQuery } from "@/hooks/queries/use-user-applications-query";
 import { useApplyJobMutation } from "@/hooks/mutations/use-apply-job-mutation";
-import type { UserApplicationModel } from "@/models/user-applications";
+import type { UserApplicationModel } from "@/models/applications";
 import type { JobApplicationData, JobApplicationResponse } from "@/services/job";
 
 interface CandidateApplicationContextType {

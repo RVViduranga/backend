@@ -7,7 +7,7 @@ import {
   getJobClosingDate,
   formatClosingDate,
 } from './job-format';
-import type { SalaryRangeModel } from '@/models/job';
+import type { SalaryRangeModel } from '@/models/jobPosts';
 
 describe('formatSalaryRangeDisplay', () => {
   it('should return "Not specified" for undefined', () => {

@@ -144,11 +144,17 @@ export default function ContactInfoEditForm() {
     setSubmitSuccess(false)
 
     try {
+      // Transform form data to match UserProfileModel for updateProfile
+      // ✅ FIXED: Properly combine city and country for location field
+      const location = formData.city && formData.country 
+        ? `${formData.city}, ${formData.country}` 
+        : formData.city || formData.country || profile?.location || '';
+      
       // Call service to update contact information
       await updateProfile({
         email: formData.email,
         phone: formData.phone,
-        location: formData.address || profile?.location || '',
+        location,
       })
       
       setSubmitSuccess(true)

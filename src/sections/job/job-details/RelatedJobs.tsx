@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import SafeIcon from "@/components/common/safe-icon";
 import { useJobSearchQuery } from "@/hooks/queries/use-job-search-query";
 import { Loader2 } from "lucide-react";
-import type { JobSummaryModel } from "@/models/job";
+import type { JobSummaryModel } from "@/models/jobPosts";
 import { DEFAULT_JOB_TYPE } from "@/constants/job-forms";
 
 export default function RelatedJobs() {

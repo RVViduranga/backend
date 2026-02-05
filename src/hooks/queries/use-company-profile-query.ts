@@ -6,7 +6,7 @@
  */
 import { useQuery } from '@tanstack/react-query';
 import companyService from '@/services/company';
-import type { CompanyDetailModel, CompanySummaryModel } from '@/models/company';
+import type { CompanyDetailModel, CompanySummaryModel } from '@/models/companies';
 
 interface CompanyProfileResponse {
   profile: CompanyDetailModel;

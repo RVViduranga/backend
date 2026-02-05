@@ -15,7 +15,7 @@ import React, {
 import { useAuth } from "@/hooks/use-auth-context";
 import { useCompanyJobsQuery } from "@/hooks/queries/use-company-jobs-query";
 import { useManageJobMutation } from "@/hooks/mutations/use-manage-job-mutation";
-import type { JobSummaryModel, JobDetailModel } from "@/models/job";
+import type { JobSummaryModel, JobDetailModel } from "@/models/jobPosts";
 
 interface EmployerJobPostContextType {
   jobs: JobSummaryModel[];

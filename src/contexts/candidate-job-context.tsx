@@ -15,7 +15,7 @@ import React, {
 import { useAuth } from "@/hooks/use-auth-context";
 import { useSavedJobsQuery } from "@/hooks/queries/use-saved-jobs-query";
 import { useSaveJobMutation } from "@/hooks/mutations/use-save-job-mutation";
-import type { JobSummaryModel } from "@/models/job";
+import type { JobSummaryModel } from "@/models/jobPosts";
 
 interface CandidateJobContextType {
   savedJobs: JobSummaryModel[];

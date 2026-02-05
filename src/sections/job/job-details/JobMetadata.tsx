@@ -25,9 +25,9 @@ export default function JobMetadata() {
     return null;
   }
 
-  const closingDate = job.closingDate || (job as any).applicationDeadline;
-  const daysUntilDeadline = closingDate
-    ? getDaysUntilDeadline(closingDate)
+  const applicationDeadline = job.applicationDeadline; // ✅ Backend field name
+  const daysUntilDeadline = applicationDeadline
+    ? getDaysUntilDeadline(applicationDeadline)
     : null;
 
   const metadataItems = [
@@ -53,7 +53,7 @@ export default function JobMetadata() {
     },
     {
       label: "Application Deadline",
-      value: formatClosingDate(job as any, formatDate),
+      value: applicationDeadline ? formatDate(applicationDeadline) : "Not specified",
       icon: "Calendar",
       urgency: daysUntilDeadline !== null && daysUntilDeadline <= 7,
       daysLeft: daysUntilDeadline,

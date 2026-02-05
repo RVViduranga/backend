@@ -3,7 +3,8 @@
  * Helper functions for calculating numeric scores from profile arrays
  */
 
-import type { ExperienceModel, EducationModel } from "@/models/user-profile";
+import type { ExperienceModel } from "@/models/experience";
+import type { EducationModel } from "@/models/education";
 
 /**
  * Calculate total years of experience from experience array

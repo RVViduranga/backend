@@ -196,7 +196,17 @@ export default function JobPostReviewContent() {
                   </p>
                   <p className="font-semibold">
                     {typeof jobData.salaryRange === "object" && jobData.salaryRange !== null
-                      ? `Rs. ${jobData.salaryRange.min.toLocaleString()} - ${jobData.salaryRange.max.toLocaleString()}`
+                      ? (() => {
+                          // Backend stores salaryRange as string "min-max"
+                          const salaryStr = typeof jobData.salaryRange === "string" 
+                            ? jobData.salaryRange 
+                            : `${(jobData.salaryRange as any).min}-${(jobData.salaryRange as any).max}`;
+                          const match = salaryStr.match(/(\d+)/g);
+                          if (match && match.length >= 2) {
+                            return `Rs. ${Number(match[0]).toLocaleString()} - ${Number(match[1]).toLocaleString()}`;
+                          }
+                          return salaryStr;
+                        })()
                       : jobData.salaryRange || "Not specified"}
                   </p>
                 </div>
@@ -204,7 +214,7 @@ export default function JobPostReviewContent() {
                   <p className="text-sm text-muted-foreground mb-1">
                     Application Deadline
                   </p>
-                  <p className="font-semibold">{formatDate(jobData.closingDate || (jobData as any).applicationDeadline || "")}</p>
+                  <p className="font-semibold">{formatDate(jobData.applicationDeadline || (jobData as any).closingDate || "")}</p> {/* ✅ Backend uses applicationDeadline */}
                 </div>
               </div>
             </CardContent>

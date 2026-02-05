@@ -19,9 +19,9 @@ import { useCompanyApplicationsQuery } from "@/hooks/queries/use-company-applica
 import companyService from "@/services/company";
 import { logger } from "@/lib/logger";
 import { ERROR_MESSAGES } from "@/constants";
-import type { CompanyDetailModel, CompanySummaryModel } from "@/models/company";
-import type { JobSummaryModel } from "@/models/job";
-import type { ApplicationModel } from "@/models/application";
+import type { CompanyDetailModel, CompanySummaryModel } from "@/models/companies";
+import type { JobSummaryModel } from "@/models/jobPosts";
+import type { ApplicationModel } from "@/models/applications";
 
 interface CompanyContextType {
   profile: CompanyDetailModel | null;

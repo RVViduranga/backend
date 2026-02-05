@@ -13,7 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SafeIcon from "@/components/common/safe-icon";
 import { useCompany } from "@/hooks/use-company-context";
 import { formatRelativeDate } from "@/utils/date";
-import type { ApplicationModel, ApplicationStatus } from "@/models/application";
+import type { ApplicationModel, ApplicationStatus } from "@/models/applications";
 import { Loader2 } from "lucide-react";
 
 export default function ApplicationsContent() {
@@ -25,33 +25,29 @@ export default function ApplicationsContent() {
 
   const filteredApplications = applications.filter((app) => {
     const statusMatch = selectedTab === "all" || app.status === selectedTab;
-    const jobMatch = selectedJob === "all" || (app.jobPost || (app as any).jobId) === selectedJob;
+    const jobMatch = selectedJob === "all" || (app.job || (app as any).jobPost || (app as any).jobId) === selectedJob; // ✅ Backend uses "job"
     return statusMatch && jobMatch;
   });
 
   const stats = {
     total: applications.length,
-    pending: applications.filter((a) => a.status === "pending").length,
-    reviewing: applications.filter((a) => a.status === "reviewing").length,
-    shortlisted: applications.filter((a) => a.status === "shortlisted").length,
-    interview: applications.filter((a) => a.status === "interview").length,
-    accepted: applications.filter((a) => a.status === "accepted").length,
-    rejected: applications.filter((a) => a.status === "rejected").length,
+    pending: applications.filter((a) => a.status === "Pending").length,
+    reviewing: applications.filter((a) => a.status === "Reviewed").length,
+    shortlisted: applications.filter((a) => a.status === "Reviewed").length, // Maps to Reviewed
+    interview: applications.filter((a) => a.status === "Reviewed").length, // Maps to Reviewed
+    accepted: applications.filter((a) => a.status === "Accepted").length,
+    rejected: applications.filter((a) => a.status === "Rejected").length,
   };
 
   const getStatusColor = (status: ApplicationStatus) => {
     switch (status) {
-      case "accepted":
+      case "Accepted":
         return "bg-green-100 text-green-800";
-      case "interview":
-        return "bg-blue-100 text-blue-800";
-      case "shortlisted":
-        return "bg-purple-100 text-purple-800";
-      case "reviewing":
+      case "Reviewed":
         return "bg-yellow-100 text-yellow-800";
-      case "pending":
+      case "Pending":
         return "bg-gray-100 text-gray-800";
-      case "rejected":
+      case "Rejected":
         return "bg-red-100 text-red-800";
       default:
         return "bg-gray-100 text-gray-800";
@@ -60,17 +56,13 @@ export default function ApplicationsContent() {
 
   const getStatusIcon = (status: ApplicationStatus) => {
     switch (status) {
-      case "accepted":
+      case "Accepted":
         return "CheckCircle";
-      case "interview":
-        return "Calendar";
-      case "shortlisted":
-        return "Star";
-      case "reviewing":
+      case "Reviewed":
         return "Clock";
-      case "pending":
+      case "Pending":
         return "Circle";
-      case "rejected":
+      case "Rejected":
         return "XCircle";
       default:
         return "Circle";
@@ -241,7 +233,7 @@ export default function ApplicationsContent() {
                             </span>
                             <span className="flex items-center gap-1">
                               <SafeIcon name="Clock" size={14} />
-                              Applied {formatRelativeDate(app.date || (app as any).appliedDate)}
+                              Applied {formatRelativeDate(app.appliedAt || (app as any).date || (app as any).appliedDate)} {/* ✅ Backend uses appliedAt */}
                             </span>
                             {app.experienceLevel && (
                               <span className="flex items-center gap-1">

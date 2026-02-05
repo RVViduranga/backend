@@ -7,6 +7,7 @@ export { default as companyService } from "./company";
 export { default as userService } from "./user";
 export { default as authService } from "./auth";
 export { default as analyticsService } from "./analytics";
+export { default as savedJobsService } from "./savedJobs";
 
 // Re-export types
 export type {

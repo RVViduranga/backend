@@ -7,7 +7,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import companyService from '@/services/company';
 import { logger } from '@/lib/logger';
-import type { ApplicationModel } from '@/models/application';
+import type { ApplicationModel } from '@/models/applications';
 
 interface UseApplicationStatusMutationReturn {
   /**

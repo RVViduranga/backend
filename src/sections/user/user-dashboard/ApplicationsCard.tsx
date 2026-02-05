@@ -15,17 +15,20 @@ export default function ApplicationsCard() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'interview':
-        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
-      case 'reviewing':
-      case 'shortlisted':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'
-      case 'rejected':
-        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
+      case 'Accepted':
       case 'accepted':
         return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+      case 'Reviewed':
+      case 'reviewing':
+      case 'interview':
+      case 'shortlisted':
+        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'
+      case 'Pending':
+      case 'pending':
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300'
+      case 'Rejected':
+      case 'rejected':
+        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
       default:
         return 'bg-gray-100 text-gray-800'
     }
@@ -33,17 +36,20 @@ export default function ApplicationsCard() {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'interview':
-        return 'CheckCircle'
-      case 'reviewing':
-      case 'shortlisted':
-        return 'Clock'
-      case 'pending':
-        return 'AlertCircle'
-      case 'rejected':
-        return 'XCircle'
+      case 'Accepted':
       case 'accepted':
         return 'CheckCircle'
+      case 'Reviewed':
+      case 'reviewing':
+      case 'interview':
+      case 'shortlisted':
+        return 'Clock'
+      case 'Pending':
+      case 'pending':
+        return 'Circle'
+      case 'Rejected':
+      case 'rejected':
+        return 'XCircle'
       default:
         return 'Circle'
     }
@@ -116,7 +122,7 @@ export default function ApplicationsCard() {
                 </div>
               </div>
               <Button variant="ghost" size="sm" className="ml-2" asChild>
-                <Link to={`/jobs/${app.jobId || (app as any).jobPost || ""}`}>
+                <Link to={`/jobs/${app.jobId || ""}`}> {/* ✅ UserApplicationModel uses jobId */}
                   <SafeIcon name="ChevronRight" size={16} />
                 </Link>
               </Button>

@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import SafeIcon from '@/components/common/safe-icon'
 import { formatRelativeDate } from '@/utils/date'
-import type { UserApplicationStatus } from '@/models/user-applications'
+import type { UserApplicationStatus } from '@/models/applications'
 import { useCandidateApplicationContext } from '@/hooks/use-candidate-application-context'
 import { Loader2 } from 'lucide-react'
 
@@ -23,28 +23,24 @@ export default function UserApplicationsContent() {
   const stats = useMemo(() => {
     return {
       total: applications.length,
-      pending: applications.filter((a) => a.status === 'pending').length,
-      reviewing: applications.filter((a) => a.status === 'reviewing').length,
-      shortlisted: applications.filter((a) => a.status === 'shortlisted').length,
-      interview: applications.filter((a) => a.status === 'interview').length,
-      accepted: applications.filter((a) => a.status === 'accepted').length,
-      rejected: applications.filter((a) => a.status === 'rejected').length,
+      pending: applications.filter((a) => a.status === 'Pending').length,
+      reviewing: applications.filter((a) => a.status === 'Reviewed').length,
+      shortlisted: applications.filter((a) => a.status === 'Reviewed').length, // Maps to Reviewed
+      interview: applications.filter((a) => a.status === 'Reviewed').length, // Maps to Reviewed
+      accepted: applications.filter((a) => a.status === 'Accepted').length,
+      rejected: applications.filter((a) => a.status === 'Rejected').length,
     }
   }, [applications])
 
   const getStatusColor = (status: UserApplicationStatus) => {
     switch (status) {
-      case 'accepted':
+      case 'Accepted':
         return 'bg-green-100 text-green-800'
-      case 'interview':
-        return 'bg-blue-100 text-blue-800'
-      case 'shortlisted':
-        return 'bg-purple-100 text-purple-800'
-      case 'reviewing':
+      case 'Reviewed':
         return 'bg-yellow-100 text-yellow-800'
-      case 'pending':
+      case 'Pending':
         return 'bg-gray-100 text-gray-800'
-      case 'rejected':
+      case 'Rejected':
         return 'bg-red-100 text-red-800'
       default:
         return 'bg-gray-100 text-gray-800'
@@ -53,17 +49,13 @@ export default function UserApplicationsContent() {
 
   const getStatusIcon = (status: UserApplicationStatus) => {
     switch (status) {
-      case 'accepted':
+      case 'Accepted':
         return 'CheckCircle'
-      case 'interview':
-        return 'Calendar'
-      case 'shortlisted':
-        return 'Star'
-      case 'reviewing':
+      case 'Reviewed':
         return 'Clock'
-      case 'pending':
+      case 'Pending':
         return 'Circle'
-      case 'rejected':
+      case 'Rejected':
         return 'XCircle'
       default:
         return 'Circle'

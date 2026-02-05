@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import SafeIcon from "@/components/common/safe-icon";
-import type { JobSummaryModel } from "@/models/job";
+import type { JobSummaryModel } from "@/models/jobPosts";
 import { toast } from "sonner";
 import { logger } from "@/lib/logger";
 

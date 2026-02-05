@@ -6,8 +6,8 @@ import type {
   JobSummaryModel as JobSummary,
   JobDetailModel as JobDetail,
   JobSearchHeroModel as JobSearchHero,
-} from "@/models/job";
-import type { CompanySmallModel as CompanySmall } from "@/models/company";
+} from "@/models/jobPosts";
+import type { CompanySmallModel as CompanySmall } from "@/models/companies";
 import { MOCK_COMPANIES } from "./companies.mock";
 
 /**
@@ -113,7 +113,6 @@ export const MOCK_JOB_DETAIL: JobDetail = {
   location: "Colombo",
   jobType: "Full-Time",
   postedDate: "2025-11-10",
-  postedBy: "comp_tech_001", // ✅ Added backend-aligned field (user ID who posted)
   description:
     "Join our dynamic engineering team to build and scale next-generation cloud services. This role demands strong expertise in both front-end (React) and back-end (Node.js) technologies, focusing on creating robust, high-performance applications.",
   responsibilities: [
@@ -129,9 +128,9 @@ export const MOCK_JOB_DETAIL: JobDetail = {
     "Strong understanding of cloud platforms (AWS, Azure, or GCP).",
     "Bachelor's or Master's degree in Computer Science or related field.",
   ],
-  salaryRange: { min: 150000, max: 250000 }, // ✅ Backend-aligned format (object)
+  salaryRange: "150000-250000", // ✅ Backend-aligned format (string)
   experienceLevel: "Senior Level",
-  closingDate: "2025-12-30", // ✅ Backend-aligned field name
+  applicationDeadline: "2025-12-30", // ✅ Backend-aligned field name
   industry: "Information Technology",
   status: "Active",
   views: 1250,

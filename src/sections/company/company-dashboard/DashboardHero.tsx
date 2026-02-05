@@ -1,5 +1,5 @@
 
-import type { CompanyDetailModel, CompanySummaryModel } from '@/models/company'
+import type { CompanyDetailModel, CompanySummaryModel } from '@/models/companies'
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import SafeIcon from "@/components/common/safe-icon"

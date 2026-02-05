@@ -6,7 +6,7 @@
  */
 import { useQuery } from '@tanstack/react-query';
 import { jobService } from '@/services';
-import type { JobDetailModel } from '@/models/job';
+import type { JobDetailModel } from '@/models/jobPosts';
 
 interface UseJobQueryOptions {
   /**

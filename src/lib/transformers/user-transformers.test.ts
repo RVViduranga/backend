@@ -7,8 +7,8 @@ import {
   normalizeUserData,
   normalizeProfileData,
 } from './user-transformers';
-import type { UserModel, UserRole } from '@/models/user';
-import type { UserProfileModel, ProfileModel } from '@/models/user-profile';
+import type { UserModel, UserRole } from '@/models/users';
+import type { UserProfileModel, ProfileModel } from '@/models/profiles';
 
 describe('transformLegacyUserProfileToBackendModels', () => {
   it('should split fullName into firstName and lastName', () => {

@@ -8,7 +8,7 @@ import {
   transformJobDetailToBackendFormat,
   normalizeJobDetail,
 } from './job-transformers';
-import type { SalaryRangeModel, JobDetailModel } from '@/models/job';
+import type { SalaryRangeModel, JobDetailModel } from '@/models/jobPosts';
 
 describe('parseSalaryRange', () => {
   it('should return object as-is if already an object', () => {

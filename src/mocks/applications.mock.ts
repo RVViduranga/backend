@@ -2,19 +2,19 @@
  * Application Mock Data
  */
 
-import type { ApplicationModel as Application } from "@/models/application";
-import type { UserApplicationModel as UserApplication } from "@/models/user-applications";
-import type { JobSummaryModel as JobSummary } from "@/models/job";
+import type { ApplicationModel as Application, UserApplicationModel as UserApplication } from "@/models/applications";
+import type { JobSummaryModel as JobSummary } from "@/models/jobPosts";
 import { MOCK_COMPANIES } from "./companies.mock";
 import { MOCK_JOB_POSTS_MANAGE, MOCK_JOB_SEARCH_RESULTS } from "./jobs.mock";
 
 export const MOCK_APPLICATIONS: Application[] = [
   {
     id: "app_001",
-    jobPost: "job_001", // ✅ Changed from jobId
-    user: "user_app_001", // ✅ Added user reference
-    date: "2025-11-15", // ✅ Changed from appliedDate
-    status: "reviewing",
+    job: "job_001", // ✅ Backend field name
+    applicant: "user_app_001", // ✅ Backend field name
+    appliedAt: "2025-11-15", // ✅ Backend field name
+    cvFilePath: "/api/download/cv_004", // ✅ Backend field name
+    status: "Reviewed", // ✅ Capitalized status
     jobTitle: "Senior Full Stack Developer (React/Node)",
     candidateName: "John Smith",
     candidateEmail: "john.smith@example.com",
@@ -23,10 +23,11 @@ export const MOCK_APPLICATIONS: Application[] = [
   },
   {
     id: "app_002",
-    jobPost: "job_001",
-    user: "user_app_002",
-    date: "2025-11-14",
-    status: "shortlisted",
+    job: "job_001",
+    applicant: "user_app_002",
+    appliedAt: "2025-11-14",
+    cvFilePath: "/api/download/cv_005",
+    status: "Reviewed", // ✅ Capitalized status
     jobTitle: "Senior Full Stack Developer (React/Node)",
     candidateName: "Sarah Johnson",
     candidateEmail: "sarah.j@example.com",
@@ -35,10 +36,11 @@ export const MOCK_APPLICATIONS: Application[] = [
   },
   {
     id: "app_003",
-    jobPost: "job_001",
-    user: "user_app_003",
-    date: "2025-11-13",
-    status: "interview",
+    job: "job_001",
+    applicant: "user_app_003",
+    appliedAt: "2025-11-13",
+    cvFilePath: "/api/download/cv_006",
+    status: "Reviewed", // ✅ Capitalized status (interview maps to Reviewed)
     jobTitle: "Senior Full Stack Developer (React/Node)",
     candidateName: "Michael Chen",
     candidateEmail: "m.chen@example.com",
@@ -47,10 +49,11 @@ export const MOCK_APPLICATIONS: Application[] = [
   },
   {
     id: "app_004",
-    jobPost: "job_002",
-    user: "user_app_004",
-    date: "2025-11-12",
-    status: "pending",
+    job: "job_002",
+    applicant: "user_app_004",
+    appliedAt: "2025-11-12",
+    cvFilePath: "/api/download/cv_007",
+    status: "Pending", // ✅ Capitalized status
     jobTitle: "Data Analyst - Financial Products",
     candidateName: "Emma Williams",
     candidateEmail: "emma.w@example.com",
@@ -59,10 +62,11 @@ export const MOCK_APPLICATIONS: Application[] = [
   },
   {
     id: "app_005",
-    jobPost: "job_002",
-    user: "user_app_005",
-    date: "2025-11-11",
-    status: "reviewing",
+    job: "job_002",
+    applicant: "user_app_005",
+    appliedAt: "2025-11-11",
+    cvFilePath: "/api/download/cv_008",
+    status: "Reviewed", // ✅ Capitalized status
     jobTitle: "Data Analyst - Financial Products",
     candidateName: "David Brown",
     candidateEmail: "david.brown@example.com",
@@ -71,10 +75,11 @@ export const MOCK_APPLICATIONS: Application[] = [
   },
   {
     id: "app_006",
-    jobPost: "job_003",
-    user: "user_app_006",
-    date: "2025-11-10",
-    status: "accepted",
+    job: "job_003",
+    applicant: "user_app_006",
+    appliedAt: "2025-11-10",
+    cvFilePath: "/api/download/cv_009",
+    status: "Accepted", // ✅ Capitalized status
     jobTitle: "Junior Marketing Associate",
     candidateName: "Lisa Anderson",
     candidateEmail: "lisa.a@example.com",
@@ -83,10 +88,11 @@ export const MOCK_APPLICATIONS: Application[] = [
   },
   {
     id: "app_007",
-    jobPost: "job_001",
-    user: "user_app_007",
-    date: "2025-11-09",
-    status: "rejected",
+    job: "job_001",
+    applicant: "user_app_007",
+    appliedAt: "2025-11-09",
+    cvFilePath: "/api/download/cv_010",
+    status: "Rejected", // ✅ Capitalized status
     jobTitle: "Senior Full Stack Developer (React/Node)",
     candidateName: "Robert Taylor",
     candidateEmail: "r.taylor@example.com",

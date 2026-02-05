@@ -3,7 +3,7 @@
  * Helper functions for formatting job-related data for display
  */
 
-import type { SalaryRangeModel } from "@/models/job";
+import type { SalaryRangeModel } from "@/models/jobPosts";
 import { formatSalaryRange } from "@/lib/transformers/job-transformers";
 
 /**
@@ -28,22 +28,22 @@ export function formatSalaryRangeDisplay(
 }
 
 /**
- * Get closing date from job (handles both field names)
+ * Get application deadline from job (backend field name)
  */
 export function getJobClosingDate(job: {
-  closingDate?: string;
   applicationDeadline?: string;
+  closingDate?: string; // Legacy support
 }): string | undefined {
-  return job.closingDate || job.applicationDeadline;
+  return job.applicationDeadline || job.closingDate; // ✅ Prefer backend field name
 }
 
 /**
- * Format closing date for display
+ * Format application deadline for display
  */
 export function formatClosingDate(
   job: {
-    closingDate?: string;
     applicationDeadline?: string;
+    closingDate?: string; // Legacy support
   },
   formatFn: (date: string) => string
 ): string {

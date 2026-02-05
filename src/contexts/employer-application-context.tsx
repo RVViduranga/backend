@@ -15,7 +15,7 @@ import React, {
 import { useAuth } from "@/hooks/use-auth-context";
 import { useCompanyApplicationsQuery } from "@/hooks/queries/use-company-applications-query";
 import { useApplicationStatusMutation } from "@/hooks/mutations/use-application-status-mutation";
-import type { ApplicationModel } from "@/models/application";
+import type { ApplicationModel } from "@/models/applications";
 
 interface EmployerApplicationContextType {
   applications: ApplicationModel[];

@@ -39,7 +39,7 @@ export default function UnifiedLoginForm() {
     setMounted(true);
     // Redirect if already authenticated
     if (isAuthenticated) {
-      const userStr = localStorage.getItem("user_profile");
+      const userStr = localStorage.getItem(STORAGE_KEYS.USER_PROFILE);
       if (userStr) {
         try {
           const user = JSON.parse(userStr);

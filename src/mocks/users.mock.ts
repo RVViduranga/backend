@@ -10,7 +10,7 @@ import type {
   MediaFileModel as MediaFile,
   CVModel as UserCV,
   DashboardStatModel as DashboardStat,
-} from "@/models/user-profile";
+} from "@/models/profiles";
 
 // ============================================================================
 // USER 1: Anya Sharma - Senior Software Engineer

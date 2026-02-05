@@ -51,10 +51,7 @@ export const emailLoginSchema = z.object({
 
 export const emailSignupSchema = z
   .object({
-    firstName: z.string().min(1, "First name is required").trim(), // ✅ Added: Required by backend
-    lastName: z.string().min(1, "Last name is required").trim(), // ✅ Added: Required by backend
-    phone: phoneSchema, // ✅ Added: Required by backend
-    location: z.string().min(1, "Location is required").trim(), // ✅ Added: Required by backend
+    fullName: z.string().min(1, "Full name is required").trim(), // ✅ Backend uses fullName
     email: emailSchema,
     password: passwordSchema,
     confirmPassword: z.string().min(1, "Please confirm your password"),
@@ -71,10 +68,10 @@ export const companyRegistrationSchema = z
   .object({
     companyName: z.string().min(1, "Company name is required").trim(),
     industry: z.string().min(1, "Industry is required"),
-    website: urlSchema,
-    address: z.string().min(1, "Address is required").trim(), // ✅ Added: Required by backend
-    phone: z.string().min(1, "Phone number is required").trim(), // ✅ Added: Required by backend
-    location: z.string().min(1, "Location is required").trim(), // ✅ Added: Required by backend
+    website: urlSchema.optional(),
+    address: z.string().min(1, "Address is required").trim(), // ✅ UI field (maps to location in backend)
+    phone: z.string().min(1, "Phone number is required").trim(),
+    location: z.string().min(1, "Location is required").trim(), // ✅ Backend field name
     email: emailSchema,
     password: passwordSchema,
     confirmPassword: z.string().min(1, "Please confirm your password"),
@@ -87,14 +84,11 @@ export const companyRegistrationSchema = z
 // ==================== User Profile Forms ====================
 
 export const personalDetailsSchema = z.object({
-  firstName: z.string().min(1, "First name is required").trim(),
-  lastName: z.string().min(1, "Last name is required").trim(),
+  fullName: z.string().min(1, "Full name is required").trim(), // ✅ Backend uses fullName
   email: emailSchema,
-  phone: phoneSchema,
-  address: z.string().min(1, "Address is required").trim(),
-  city: z.string().min(1, "City is required").trim(),
-  country: z.string().min(1, "Country is required").trim(),
-  bio: z.string().optional(),
+  phone: phoneSchema.optional(),
+  location: z.string().min(1, "Location is required").trim(), // ✅ Backend uses location
+  headline: z.string().optional(), // ✅ Backend uses headline (not bio)
 });
 
 export const contactInfoSchema = z.object({

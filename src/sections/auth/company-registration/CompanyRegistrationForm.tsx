@@ -21,7 +21,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import SafeIcon from "@/components/common/safe-icon";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth-context";
-import type { CompanyRegistrationModel } from "@/models/auth-data";
+import type { CompanyRegistrationModel } from "@/models/auth";
 
 const INDUSTRIES = [
   "Technology",
@@ -208,10 +208,25 @@ export default function CompanyRegistrationForm() {
       setTimeout(() => {
         navigate("/company-dashboard", { replace: true });
       }, 500);
-    } catch (error) {
-      toast.error("Registration failed. Please try again.");
+    } catch (error: any) {
+      // Extract error message from API response or use default
+      let errorMessage = "Registration failed. Please try again.";
+      
+      if (error?.response?.data?.message) {
+        // Backend returned an error message
+        errorMessage = error.response.data.message;
+      } else if (error?.message) {
+        // Error object has a message
+        errorMessage = error.message;
+      } else if (error?.code === "ERR_NETWORK" || error?.message?.includes("Network Error")) {
+        // Network error - backend not running
+        errorMessage = "Cannot connect to server. Please ensure the backend server is running.";
+      }
+      
+      console.error("Company registration error:", error);
+      toast.error(errorMessage);
       setErrors({
-        general: "Registration failed. Please try again.",
+        general: errorMessage,
       });
     } finally {
       setIsLoading(false);

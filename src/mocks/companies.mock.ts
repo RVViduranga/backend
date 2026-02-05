@@ -6,7 +6,7 @@ import type {
   CompanySmallModel as CompanySmall,
   CompanySummaryModel as CompanySummary,
   CompanyDetailModel as CompanyDetail,
-} from "@/models/company";
+} from "@/models/companies";
 
 // Base company data - single source of truth
 export const MOCK_COMPANIES: CompanySmall[] = [
@@ -57,8 +57,7 @@ export const MOCK_COMPANY_DETAILS: Record<string, CompanyDetail> = {
       "https://spark-builder.s3.us-east-1.amazonaws.com/image/2025/11/17/67be8b19-c376-489e-8163-11d636dad84a.png",
     headerImageUrl:
       "https://spark-builder.s3.us-east-1.amazonaws.com/image/2025/11/17/41a51722-ee93-43c5-ad10-faf2f4320db1.png",
-    address: "Colombo, Sri Lanka", // ✅ Added backend-aligned field
-    isVerified: true, // ✅ Added backend-aligned field
+    location: "Colombo, Sri Lanka", // ✅ Backend field name
     description:
       "Innovatech Solutions is a leading provider of cloud computing and AI services in Sri Lanka. We are committed to fostering innovation and driving digital transformation for our clients across the region.",
     website: "https://innovatech.com",
@@ -73,8 +72,7 @@ export const MOCK_COMPANY_DETAILS: Record<string, CompanyDetail> = {
       "https://spark-builder.s3.us-east-1.amazonaws.com/image/2025/11/17/682471d9-c4d8-4148-adca-c62d651b9199.png",
     headerImageUrl:
       "https://spark-builder.s3.us-east-1.amazonaws.com/image/2025/11/17/41a51722-ee93-43c5-ad10-faf2f4320db1.png",
-    address: "Colombo, Sri Lanka", // ✅ Added backend-aligned field
-    isVerified: true, // ✅ Added backend-aligned field
+    location: "Colombo, Sri Lanka", // ✅ Backend field name
     description:
       "Global Finance Corp is a premier financial services company providing innovative banking and investment solutions across Sri Lanka and the region.",
     website: "https://globalfinance.com",
@@ -90,7 +88,6 @@ export const MOCK_COMPANY_DETAILS: Record<string, CompanyDetail> = {
     headerImageUrl:
       "https://spark-builder.s3.us-east-1.amazonaws.com/image/2025/11/17/41a51722-ee93-43c5-ad10-faf2f4320db1.png",
     address: "Kandy, Sri Lanka", // ✅ Added backend-aligned field
-    isVerified: true, // ✅ Added backend-aligned field
     description:
       "Creative Spark Agency specializes in digital marketing, branding, and creative campaigns that drive results for businesses across Sri Lanka.",
     website: "https://creativespark.com",
@@ -106,7 +103,6 @@ export const MOCK_COMPANY_DETAILS: Record<string, CompanyDetail> = {
     headerImageUrl:
       "https://spark-builder.s3.us-east-1.amazonaws.com/image/2025/11/17/41a51722-ee93-43c5-ad10-faf2f4320db1.png",
     address: "Galle, Sri Lanka", // ✅ Added backend-aligned field
-    isVerified: true, // ✅ Added backend-aligned field
     description:
       "Apex Manufacturing is a leading industrial manufacturing company in Sri Lanka, producing high-quality products for local and international markets.",
     website: "https://apexmanufacturing.com",
@@ -125,7 +121,6 @@ export const MOCK_COMPANY_DETAILS: Record<string, CompanyDetail> = {
       "MediCare Plus provides comprehensive healthcare services and medical solutions across Sri Lanka, improving patient outcomes and community health.",
     website: "https://medicareplus.com",
     address: "Colombo, Sri Lanka", // ✅ Added backend-aligned field
-    isVerified: true, // ✅ Added backend-aligned field
     headquarters: "Colombo, Sri Lanka", // UI convenience (alias for address)
     establishedYear: 2010,
     employeeCountRange: "1001-5000 employees",
@@ -137,8 +132,7 @@ export const MOCK_COMPANY_DETAILS: Record<string, CompanyDetail> = {
       "https://spark-builder.s3.us-east-1.amazonaws.com/image/2025/11/17/682471d9-c4d8-4148-adca-c62d651b9199.png",
     headerImageUrl:
       "https://spark-builder.s3.us-east-1.amazonaws.com/image/2025/11/17/41a51722-ee93-43c5-ad10-faf2f4320db1.png",
-    address: "Colombo, Sri Lanka", // ✅ Added backend-aligned field
-    isVerified: true, // ✅ Added backend-aligned field
+    location: "Colombo, Sri Lanka", // ✅ Backend field name
     description:
       "EduTech Solutions develops innovative educational technology platforms in Sri Lanka, transforming learning experiences for students and educators.",
     website: "https://edutechsolutions.com",

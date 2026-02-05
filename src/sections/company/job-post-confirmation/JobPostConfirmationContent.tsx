@@ -145,9 +145,21 @@ export default function JobPostConfirmationContent({
                 </p>
                 <p className="font-semibold flex items-center gap-2">
                   <SafeIcon name="DollarSign" size={16} />
-                  {typeof displayJob.salaryRange === "object" && displayJob.salaryRange !== null
-                    ? `Rs. ${displayJob.salaryRange.min.toLocaleString()} - ${displayJob.salaryRange.max.toLocaleString()}`
-                    : displayJob.salaryRange || "Not specified"}
+                  {(() => {
+                    // Backend stores salaryRange as string "min-max"
+                    if (typeof displayJob.salaryRange === "string") {
+                      const match = displayJob.salaryRange.match(/(\d+)/g);
+                      if (match && match.length >= 2) {
+                        return `Rs. ${Number(match[0]).toLocaleString()} - ${Number(match[1]).toLocaleString()}`;
+                      }
+                      return displayJob.salaryRange;
+                    }
+                    // Legacy object format support
+                    if (typeof displayJob.salaryRange === "object" && displayJob.salaryRange !== null) {
+                      return `Rs. ${(displayJob.salaryRange as any).min.toLocaleString()} - ${(displayJob.salaryRange as any).max.toLocaleString()}`;
+                    }
+                    return "Not specified";
+                  })()}
                 </p>
               </div>
               <div>

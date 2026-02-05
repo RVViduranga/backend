@@ -6,7 +6,7 @@
  */
 import { useQuery } from '@tanstack/react-query';
 import userService from '@/services/user';
-import type { JobSummaryModel } from '@/models/job';
+import type { JobSummaryModel } from '@/models/jobPosts';
 
 interface UseSavedJobsQueryOptions {
   /**

@@ -17,7 +17,7 @@ import { useUserProfileQuery } from "@/hooks/queries/use-user-profile-query";
 import userService from "@/services/user";
 import { logger } from "@/lib/logger";
 import { ERROR_MESSAGES } from "@/constants";
-import type { UserProfileModel } from "@/models/user-profile";
+import type { UserProfileModel } from "@/models/profiles";
 
 interface UserContextType {
   profile: UserProfileModel | null;

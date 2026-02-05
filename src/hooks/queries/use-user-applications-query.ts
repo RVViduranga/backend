@@ -6,7 +6,7 @@
  */
 import { useQuery } from '@tanstack/react-query';
 import userService from '@/services/user';
-import type { UserApplicationModel } from '@/models/user-applications';
+import type { UserApplicationModel } from '@/models/applications';
 
 interface UseUserApplicationsQueryOptions {
   /**

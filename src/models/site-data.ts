@@ -1,12 +1,8 @@
 /**
- * Site Data - Type Definitions and Static Configuration
- *
- * FOLDER STRUCTURE:
- * - src/data/     → Type definitions + Static config (this file)
- * - src/mocks/    → All mock data (centralized in @/mocks)
- * - src/types/    → New centralized types (gradual migration target)
- *
- * NOTE: This file contains site-wide branding and navigation type definitions.
+ * Site Data Model - Shared Utility Types
+ * 
+ * This model contains site-wide branding and navigation type definitions.
+ * Static configuration objects are in @/constants/app.ts
  */
 
 // ============================================================================
