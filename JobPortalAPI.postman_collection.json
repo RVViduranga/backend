@@ -1,0 +1,93 @@
+{
+  "info": {
+    "_postman_id": "b1e1e1e1-1234-5678-9101-abcdefabcdef",
+    "name": "Job Portal API Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get Users",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/users",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["users"]
+        }
+      }
+    },
+    {
+      "name": "Get Jobs",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/jobs",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["jobs"]
+        }
+      }
+    },
+    {
+      "name": "Get Companies",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/companies",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["companies"]
+        }
+      }
+    },
+    {
+      "name": "Get Job Posts",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/jobPosts",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["jobPosts"]
+        }
+      }
+    },
+    {
+      "name": "Get Matching Data",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/matchingData",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["matchingData"]
+        }
+      }
+    },
+    {
+      "name": "Get Notifications",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/notifications",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["notifications"]
+        }
+      }
+    }
+  ]
+}

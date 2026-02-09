@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import js from '@eslint/js'
 import react from 'eslint-plugin-react'
 import reactHooks from 'eslint-plugin-react-hooks'
@@ -73,3 +74,31 @@ export default [
     },
   },
 ]
+=======
+const tseslint = require("@typescript-eslint/eslint-plugin");
+const tsParser = require("@typescript-eslint/parser");
+
+/** @type {import("eslint").FlatConfig[]} */
+module.exports = [
+  {
+    ignores: ["node_modules/**", "dist/**", "build/**", ".env", "*.log"],
+  },
+  {
+    files: ["**/*.ts", "**/*.tsx"],
+    languageOptions: {
+      parser: tsParser,
+      ecmaVersion: "latest",
+      sourceType: "module",
+    },
+    plugins: {
+      "@typescript-eslint": tseslint,
+    },
+    rules: {
+      ...tseslint.configs.recommended.rules,
+      "@typescript-eslint/no-unused-vars": "warn",
+      "@typescript-eslint/explicit-module-boundary-types": "off",
+      "@typescript-eslint/no-explicit-any": "off"
+    },
+  },
+];
+>>>>>>> eee8da5 (Initial commit)
