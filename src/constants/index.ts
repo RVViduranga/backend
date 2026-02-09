@@ -40,10 +40,14 @@ export const API_ENDPOINTS = {
   USER_CV_UPLOAD: "/users/cv/upload",
   USER_CV_PRIMARY: (id: string) => `/users/cv/${id}/primary`,
 
-  // Portfolio
-  USER_PORTFOLIO: "/users/portfolio",
-  USER_PORTFOLIO_BY_ID: (id: string) => `/users/portfolio/${id}`,
-  USER_PORTFOLIO_UPLOAD: "/users/portfolio/upload",
+  // Media upload (CV and Profile Photo only)
+  PROFILE_MEDIA_UPLOAD: "/profiles/media",
+
+  // Projects (New - stores projects as single entities)
+  PROJECTS: "/projects",
+  PROJECT_BY_ID: (id: string) => `/projects/${id}`,
+  PROJECT_FILES: (id: string) => `/projects/${id}/files`,
+  PROJECT_FILE_DELETE: (projectId: string, fileId: string) => `/projects/${projectId}/files/${fileId}`,
 
   // Applications
   APPLICATIONS: "/applications",

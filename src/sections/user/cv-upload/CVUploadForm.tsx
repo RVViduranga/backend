@@ -18,6 +18,9 @@ import {
   ALLOWED_CV_MIME_TYPES,
   MAX_CV_SIZE_MB,
 } from "@/constants/app";
+import { userService } from "@/services/user";
+import { toast } from "sonner";
+import { logger } from "@/lib/logger";
 
 interface UploadedFile {
   id: string;
@@ -82,32 +85,36 @@ export default function CVUploadForm() {
     setIsUploading(true);
     setUploadProgress(0);
 
-    // Simulate file upload with progress
-    const progressInterval = setInterval(() => {
-      setUploadProgress((prev) => {
-        if (prev >= 90) {
-          clearInterval(progressInterval);
-          return prev;
-        }
-        return prev + Math.random() * 30;
-      });
-    }, 200);
+    try {
+      // Simulate upload progress for better UX
+      const progressInterval = setInterval(() => {
+        setUploadProgress((prev) => {
+          if (prev >= 90) {
+            clearInterval(progressInterval);
+            return prev;
+          }
+          return prev + Math.random() * 30;
+        });
+      }, 200);
 
-    // Simulate upload completion
-    setTimeout(() => {
+      // Call the service to upload CV
+      const cvName = file.name.replace(/\.[^/.]+$/, ""); // Remove extension for name
+      const newCV = await userService.uploadCV(file, cvName);
+
       clearInterval(progressInterval);
       setUploadProgress(100);
 
       // Add file to uploaded files list
       const newFile: UploadedFile = {
-        id: Date.now().toString(),
-        name: file.name,
+        id: newCV.id,
+        name: newCV.fileName,
         size: file.size,
         uploadedAt: "just now",
       };
 
       setUploadedFiles((prev) => [newFile, ...prev]);
       setSuccess(`${file.name} uploaded successfully!`);
+      toast.success("CV uploaded successfully!");
       setIsUploading(false);
       setUploadProgress(0);
 
@@ -115,7 +122,14 @@ export default function CVUploadForm() {
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
-    }, 2000);
+    } catch (error: any) {
+      logger.error("Error uploading CV:", error);
+      const errorMessage = error?.response?.data?.message || error?.message || "Failed to upload CV. Please try again.";
+      setError(errorMessage);
+      toast.error(errorMessage);
+      setIsUploading(false);
+      setUploadProgress(0);
+    }
   };
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {

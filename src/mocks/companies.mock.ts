@@ -87,7 +87,7 @@ export const MOCK_COMPANY_DETAILS: Record<string, CompanyDetail> = {
       "https://spark-builder.s3.us-east-1.amazonaws.com/image/2025/11/17/72f42cd3-7665-4b38-b358-4492643751ec.png",
     headerImageUrl:
       "https://spark-builder.s3.us-east-1.amazonaws.com/image/2025/11/17/41a51722-ee93-43c5-ad10-faf2f4320db1.png",
-    address: "Kandy, Sri Lanka", // ✅ Added backend-aligned field
+    location: "Kandy, Sri Lanka", // ✅ Backend field name
     description:
       "Creative Spark Agency specializes in digital marketing, branding, and creative campaigns that drive results for businesses across Sri Lanka.",
     website: "https://creativespark.com",
@@ -102,7 +102,7 @@ export const MOCK_COMPANY_DETAILS: Record<string, CompanyDetail> = {
       "https://spark-builder.s3.us-east-1.amazonaws.com/image/2025/11/17/b81675fe-7826-4834-bba7-cde75b444ce3.png",
     headerImageUrl:
       "https://spark-builder.s3.us-east-1.amazonaws.com/image/2025/11/17/41a51722-ee93-43c5-ad10-faf2f4320db1.png",
-    address: "Galle, Sri Lanka", // ✅ Added backend-aligned field
+    location: "Galle, Sri Lanka", // ✅ Backend field name
     description:
       "Apex Manufacturing is a leading industrial manufacturing company in Sri Lanka, producing high-quality products for local and international markets.",
     website: "https://apexmanufacturing.com",
@@ -120,7 +120,7 @@ export const MOCK_COMPANY_DETAILS: Record<string, CompanyDetail> = {
     description:
       "MediCare Plus provides comprehensive healthcare services and medical solutions across Sri Lanka, improving patient outcomes and community health.",
     website: "https://medicareplus.com",
-    address: "Colombo, Sri Lanka", // ✅ Added backend-aligned field
+    location: "Colombo, Sri Lanka", // ✅ Backend field name
     headquarters: "Colombo, Sri Lanka", // UI convenience (alias for address)
     establishedYear: 2010,
     employeeCountRange: "1001-5000 employees",
@@ -151,7 +151,7 @@ export const MOCK_COMPANY_SUMMARIES: Record<string, CompanySummary> = {
   comp_tech_001: {
     id: "comp_tech_001",
     name: "Innovatech Solutions",
-    logoUrl: MOCK_COMPANY_DETAILS["comp_tech_001"].logoUrl,
+    logoUrl: MOCK_COMPANY_DETAILS["comp_tech_001"].logoUrl || "",
     activeJobsCount: 1, // job_001 (Active)
     totalApplicationsReceived: 145,
     industry: "Information Technology",
@@ -159,7 +159,7 @@ export const MOCK_COMPANY_SUMMARIES: Record<string, CompanySummary> = {
   comp_fin_002: {
     id: "comp_fin_002",
     name: "Global Finance Corp",
-    logoUrl: MOCK_COMPANY_DETAILS["comp_fin_002"].logoUrl,
+    logoUrl: MOCK_COMPANY_DETAILS["comp_fin_002"].logoUrl || "",
     activeJobsCount: 1, // job_002 (Active)
     totalApplicationsReceived: 89,
     industry: "Finance",
@@ -167,7 +167,7 @@ export const MOCK_COMPANY_SUMMARIES: Record<string, CompanySummary> = {
   comp_mar_003: {
     id: "comp_mar_003",
     name: "Creative Spark Agency",
-    logoUrl: MOCK_COMPANY_DETAILS["comp_mar_003"].logoUrl,
+    logoUrl: MOCK_COMPANY_DETAILS["comp_mar_003"].logoUrl || "",
     activeJobsCount: 1, // job_006 (Active), job_003 is Inactive
     totalApplicationsReceived: 34,
     industry: "Marketing",
@@ -175,7 +175,7 @@ export const MOCK_COMPANY_SUMMARIES: Record<string, CompanySummary> = {
   comp_man_004: {
     id: "comp_man_004",
     name: "Apex Manufacturing",
-    logoUrl: MOCK_COMPANY_DETAILS["comp_man_004"].logoUrl,
+    logoUrl: MOCK_COMPANY_DETAILS["comp_man_004"].logoUrl || "",
     activeJobsCount: 1, // job_005 (Active), job_004 is Closed
     totalApplicationsReceived: 52,
     industry: "Manufacturing",
@@ -183,7 +183,7 @@ export const MOCK_COMPANY_SUMMARIES: Record<string, CompanySummary> = {
   comp_health_005: {
     id: "comp_health_005",
     name: "MediCare Plus",
-    logoUrl: MOCK_COMPANY_DETAILS["comp_health_005"].logoUrl,
+    logoUrl: MOCK_COMPANY_DETAILS["comp_health_005"].logoUrl || "",
     activeJobsCount: 0, // No jobs
     totalApplicationsReceived: 67,
     industry: "Healthcare",
@@ -191,7 +191,7 @@ export const MOCK_COMPANY_SUMMARIES: Record<string, CompanySummary> = {
   comp_edu_006: {
     id: "comp_edu_006",
     name: "EduTech Solutions",
-    logoUrl: MOCK_COMPANY_DETAILS["comp_edu_006"].logoUrl,
+    logoUrl: MOCK_COMPANY_DETAILS["comp_edu_006"].logoUrl || "",
     activeJobsCount: 0, // No jobs
     totalApplicationsReceived: 28,
     industry: "Education",

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -27,6 +27,8 @@ import CVListSidebar from "./CVListSidebar";
 import { useUser } from "@/hooks/use-user-context";
 import { Loader2 } from "lucide-react";
 import userService from "@/services/user";
+import { toast } from "sonner";
+import { logger } from "@/lib/logger";
 
 interface CV {
   id: string;
@@ -41,6 +43,8 @@ interface CV {
 
 export default function CVViewerComponent() {
   const { isLoading } = useUser();
+  const [searchParams] = useSearchParams();
+  const cvIdFromUrl = searchParams.get('id');
   const [selectedCV, setSelectedCV] = useState<CV | null>(null);
   const [cvList, setCVList] = useState<CV[]>([]);
   const [isLoadingCVs, setIsLoadingCVs] = useState(true);
@@ -64,8 +68,15 @@ export default function CVViewerComponent() {
           previewUrl: cv.downloadUrl,
         }));
         setCVList(transformed);
+        
+        // Select CV from URL parameter if provided, otherwise select first CV
         if (transformed.length > 0) {
-          setSelectedCV(transformed[0]);
+          if (cvIdFromUrl) {
+            const cvFromUrl = transformed.find(cv => cv.id === cvIdFromUrl);
+            setSelectedCV(cvFromUrl || transformed[0]);
+          } else {
+            setSelectedCV(transformed[0]);
+          }
         }
       } catch (error) {
         // Handle error - for now just log
@@ -74,8 +85,9 @@ export default function CVViewerComponent() {
       }
     };
     loadCVs();
-  }, []);
+  }, [cvIdFromUrl]);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const handleSetPrimary = (cvId: string) => {
     setCVList(
@@ -91,15 +103,24 @@ export default function CVViewerComponent() {
     if (!selectedCV) return;
     setIsDeleting(true);
     try {
+      // Call backend API to delete CV
+      await userService.deleteCV(selectedCV.id);
+      
+      // Update local state
       const updatedList = cvList.filter((cv) => cv.id !== selectedCV.id);
       setCVList(updatedList);
+      
       if (updatedList.length > 0) {
         setSelectedCV(updatedList[0]);
       } else {
         setSelectedCV(null);
       }
+      
+      setDeleteDialogOpen(false);
+      toast.success("CV deleted successfully");
     } catch (error) {
-      // Handle error
+      logger.error("Error deleting CV:", error);
+      toast.error("Failed to delete CV. Please try again.");
     } finally {
       setIsDeleting(false);
     }
@@ -150,19 +171,27 @@ export default function CVViewerComponent() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <div className="flex items-center gap-2 mb-2">
-          <Link
-            to="/cv-management"
-            className="text-primary hover:underline flex items-center gap-1"
-          >
-            <SafeIcon name="ChevronLeft" size={18} />
-            CV Management
-          </Link>
+      <div className="mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <Link
+              to="/cv-management"
+              className="text-primary hover:underline flex items-center gap-1 text-sm"
+            >
+              <SafeIcon name="ChevronLeft" size={16} />
+              Back to CV Management
+            </Link>
+          </div>
+          {selectedCV.isPrimary && (
+            <Badge className="bg-green-100 text-green-800 hover:bg-green-100 border-green-300">
+              <SafeIcon name="Check" size={14} className="mr-1" />
+              Primary CV
+            </Badge>
+          )}
         </div>
-        <h1 className="text-3xl font-bold">View CV</h1>
-        <p className="text-muted-foreground mt-2">
-          Review and manage your uploaded resumes
+        <h1 className="text-2xl font-bold">{selectedCV.name}</h1>
+        <p className="text-muted-foreground text-sm mt-1">
+          {selectedCV.fileName}
         </p>
       </div>
 
@@ -173,7 +202,6 @@ export default function CVViewerComponent() {
             cvs={cvList}
             selectedCV={selectedCV}
             onSelectCV={setSelectedCV}
-            onSetPrimary={handleSetPrimary}
           />
         </div>
 
@@ -181,21 +209,7 @@ export default function CVViewerComponent() {
         <div className="lg:col-span-3 space-y-6">
           {/* CV Preview */}
           <Card>
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div>
-                  <CardTitle>{selectedCV.name}</CardTitle>
-                  <CardDescription>{selectedCV.fileName}</CardDescription>
-                </div>
-                {selectedCV.isPrimary && (
-                  <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
-                    <SafeIcon name="Check" size={14} className="mr-1" />
-                    Primary
-                  </Badge>
-                )}
-              </div>
-            </CardHeader>
-            <CardContent>
+            <CardContent className="pt-6">
               <CVViewerPreview
                 previewUrl={selectedCV.previewUrl}
                 fileName={selectedCV.fileName}
@@ -203,15 +217,18 @@ export default function CVViewerComponent() {
             </CardContent>
           </Card>
 
-          {/* CV Metadata */}
-          <CVMetadataDisplay cv={selectedCV} />
-
-          {/* Action Buttons */}
+          {/* CV Metadata and Actions Combined */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Actions</CardTitle>
+              <CardTitle className="text-lg">Document Details & Actions</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-6">
+              {/* Metadata */}
+              <CVMetadataDisplay cv={selectedCV} />
+
+              <Separator />
+
+              {/* Action Buttons */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <Button
                   variant="outline"
@@ -219,7 +236,7 @@ export default function CVViewerComponent() {
                   onClick={handleDownloadCV}
                 >
                   <SafeIcon name="Download" size={18} className="mr-2" />
-                  Download
+                  Download CV
                 </Button>
 
                 {!selectedCV.isPrimary && (
@@ -233,7 +250,7 @@ export default function CVViewerComponent() {
                   </Button>
                 )}
 
-                <AlertDialog>
+                <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
                   <AlertDialogTrigger asChild>
                     <Button
                       variant="destructive"
@@ -241,7 +258,7 @@ export default function CVViewerComponent() {
                       disabled={isDeleting}
                     >
                       <SafeIcon name="Trash2" size={18} className="mr-2" />
-                      Delete
+                      Delete CV
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
@@ -253,26 +270,20 @@ export default function CVViewerComponent() {
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <div className="flex gap-3">
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogCancel onClick={() => setDeleteDialogOpen(false)}>
+                        Cancel
+                      </AlertDialogCancel>
                       <AlertDialogAction
                         onClick={handleDeleteCV}
                         className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        disabled={isDeleting}
                       >
-                        Delete
+                        {isDeleting ? "Deleting..." : "Delete"}
                       </AlertDialogAction>
                     </div>
                   </AlertDialogContent>
                 </AlertDialog>
               </div>
-
-              <Separator />
-
-              <Button variant="outline" className="w-full" asChild>
-                <Link to="/cv-management">
-                  <SafeIcon name="ChevronLeft" size={18} className="mr-2" />
-                  Back to CV Management
-                </Link>
-              </Button>
             </CardContent>
           </Card>
         </div>

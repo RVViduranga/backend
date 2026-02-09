@@ -1,6 +1,7 @@
 
 import { Card } from '@/components/ui/card'
 import SafeIcon from "@/components/common/safe-icon"
+import { API_BASE_URL } from '@/constants'
 
 interface CVViewerPreviewProps {
   previewUrl: string
@@ -9,38 +10,56 @@ interface CVViewerPreviewProps {
 
 export default function CVViewerPreview({ previewUrl, fileName }: CVViewerPreviewProps) {
   const fileExtension = fileName.split('.').pop()?.toUpperCase() || 'FILE'
+  
+  // Construct full URL if it's a relative path
+  const fullUrl = previewUrl.startsWith('http') 
+    ? previewUrl 
+    : `${API_BASE_URL.replace('/api', '')}${previewUrl}`
+
+  // Check if it's a PDF (can be embedded) or DOC/DOCX (need to download)
+  const isPDF = fileExtension === 'PDF'
+  const isDocument = ['DOC', 'DOCX'].includes(fileExtension)
 
   return (
     <div className="space-y-4">
       {/* PDF/Document Preview */}
       <div className="bg-muted rounded-lg overflow-hidden border">
         <div className="aspect-[8.5/11] bg-white relative">
-          <img
-            src={previewUrl}
-            alt={`Preview of ${fileName}`}
-            className="w-full h-full object-cover"
-          />
+          {isPDF ? (
+            <iframe
+              src={fullUrl}
+              className="w-full h-full border-0"
+              title={`Preview of ${fileName}`}
+            />
+          ) : isDocument ? (
+            <div className="w-full h-full flex flex-col items-center justify-center p-8 bg-gradient-to-br from-muted to-muted/50">
+              <SafeIcon
+                name="FileText"
+                size={64}
+                className="text-muted-foreground mb-4"
+              />
+              <p className="text-sm font-medium text-muted-foreground mb-2">
+                {fileExtension} Document
+              </p>
+              <p className="text-xs text-muted-foreground text-center max-w-xs">
+                Preview not available for {fileExtension} files. Please download to view.
+              </p>
+              <a
+                href={fullUrl}
+                download={fileName}
+                className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm hover:bg-primary/90 transition-colors"
+              >
+                Download to View
+              </a>
+            </div>
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <p className="text-muted-foreground">Preview not available</p>
+            </div>
+          )}
           {/* Overlay for better UX */}
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/5" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/5 pointer-events-none" />
         </div>
-      </div>
-
-      {/* File Info Bar */}
-      <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center">
-            {fileExtension === 'PDF' ? (
-              <SafeIcon name="FileText" size={20} className="text-primary" />
-            ) : (
-              <SafeIcon name="File" size={20} className="text-primary" />
-            )}
-          </div>
-          <div>
-            <p className="font-medium text-sm">{fileName}</p>
-            <p className="text-xs text-muted-foreground">{fileExtension} Document</p>
-          </div>
-        </div>
-        <SafeIcon name="ExternalLink" size={18} className="text-muted-foreground" />
       </div>
 
       {/* Preview Note */}

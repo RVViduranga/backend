@@ -29,7 +29,8 @@ export const MAX_PAGE_SIZE = 100;
 
 // File Upload Limits
 export const MAX_CV_SIZE_MB = 5;
-export const MAX_PORTFOLIO_SIZE_MB = 10;
+export const MAX_PORTFOLIO_SIZE_MB = 10; // Legacy - kept for backward compatibility
+export const MAX_PROJECT_SIZE_MB = 10; // New - for projects and work samples
 export const MAX_IMAGE_SIZE_MB = 2;
 export const ALLOWED_CV_FORMATS = ["pdf", "doc", "docx"];
 export const ALLOWED_IMAGE_FORMATS = ["jpg", "jpeg", "png", "webp"];
@@ -48,14 +49,42 @@ export const ALLOWED_IMAGE_MIME_TYPES = [
   "image/webp",
 ] as const;
 
-// Portfolio File Formats
+// Portfolio File Formats (Legacy - kept for backward compatibility)
 export const PORTFOLIO_SUPPORTED_FORMATS = {
   documents: ["PDF", "DOCX", "PPT"] as const,
   designFiles: ["Figma", "XD", "Sketch"] as const,
   images: ["JPG", "PNG", "SVG"] as const,
 } as const;
 
+// Projects & Work Samples File Formats (New)
+export const PROJECT_SUPPORTED_FORMATS = {
+  documents: ["PDF", "DOCX", "PPT"] as const,
+  designFiles: ["Figma", "XD", "Sketch"] as const,
+  images: ["JPG", "PNG", "SVG"] as const,
+} as const;
+
 export const PORTFOLIO_ACCEPTED_TYPES = [
+  ".pdf",
+  ".doc",
+  ".docx",
+  ".ppt",
+  ".pptx",
+  ".xls",
+  ".xlsx",
+  ".fig",
+  ".xd",
+  ".sketch",
+  ".jpg",
+  ".jpeg",
+  ".png",
+  ".svg",
+  ".gif",
+  ".zip",
+  ".rar",
+] as const;
+
+// Projects & Work Samples Accepted Types (New)
+export const PROJECT_ACCEPTED_TYPES = [
   ".pdf",
   ".doc",
   ".docx",

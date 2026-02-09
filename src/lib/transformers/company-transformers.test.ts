@@ -13,28 +13,26 @@ describe('transformCompanyToDetailModel', () => {
     const company: CompanyModel = {
       id: 'comp_001',
       name: 'Test Company',
-      address: '123 Main St',
-      logo: 'https://example.com/logo.png',
-      isVerified: true,
+      description: 'A test company',
+      location: '123 Main St',
+      logoUrl: 'https://example.com/logo.png',
     };
 
     const result = transformCompanyToDetailModel(company);
     expect(result.id).toBe('comp_001');
     expect(result.name).toBe('Test Company');
-    expect(result.address).toBe('123 Main St');
-    expect(result.logo).toBe('https://example.com/logo.png');
+    expect(result.location).toBe('123 Main St');
     expect(result.logoUrl).toBe('https://example.com/logo.png');
-    expect(result.isVerified).toBe(true);
-    expect(result.headquarters).toBe('123 Main St');
+    expect(result.description).toBe('A test company');
   });
 
   it('should include additional fields', () => {
     const company: CompanyModel = {
       id: 'comp_001',
       name: 'Test Company',
-      address: '123 Main St',
-      logo: 'https://example.com/logo.png',
-      isVerified: true,
+      description: 'A test company',
+      location: '123 Main St',
+      logoUrl: 'https://example.com/logo.png',
     };
 
     const additionalFields = {
@@ -57,13 +55,12 @@ describe('transformCompanyToDetailModel', () => {
     const company: CompanyModel = {
       id: 'comp_001',
       name: 'Test Company',
-      address: '123 Main St',
-      isVerified: false,
+      description: 'A test company',
+      location: '123 Main St',
     };
 
     const result = transformCompanyToDetailModel(company);
-    expect(result.logo).toBeUndefined();
-    expect(result.logoUrl).toBe('');
+    expect(result.logoUrl).toBeUndefined();
   });
 });
 
@@ -72,9 +69,9 @@ describe('normalizeCompanyData', () => {
     const company: CompanyModel = {
       id: 'comp_001',
       name: 'Test Company',
-      address: '123 Main St',
-      logo: 'https://example.com/logo.png',
-      isVerified: true,
+      description: 'A test company',
+      location: '123 Main St',
+      logoUrl: 'https://example.com/logo.png',
     };
 
     const result = normalizeCompanyData(company);
@@ -85,30 +82,29 @@ describe('normalizeCompanyData', () => {
     const detail: CompanyDetailModel = {
       id: 'comp_001',
       name: 'Test Company',
-      address: '123 Main St',
-      logo: 'https://example.com/logo.png',
+      description: 'A test company',
+      location: '123 Main St',
       logoUrl: 'https://example.com/logo.png',
-      isVerified: true,
       headquarters: '123 Main St',
     } as CompanyDetailModel;
 
     const result = normalizeCompanyData(detail);
     expect(result.id).toBe('comp_001');
-    expect(result.address).toBe('123 Main St');
-    expect(result.logo).toBe('https://example.com/logo.png');
+    expect(result.location).toBe('123 Main St');
+    expect(result.logoUrl).toBe('https://example.com/logo.png');
   });
 
-  it('should use headquarters as address if address not available', () => {
+  it('should use headquarters as location if location not available', () => {
     const data = {
       id: 'comp_001',
       name: 'Test Company',
+      description: 'A test company',
       headquarters: '123 Main St',
       logoUrl: 'https://example.com/logo.png',
-      isVerified: true,
     };
 
     const result = normalizeCompanyData(data);
-    expect(result.address).toBe('123 Main St');
+    expect(result.location).toBe('123 Main St');
   });
 
   it('should handle partial data with defaults', () => {
@@ -120,7 +116,7 @@ describe('normalizeCompanyData', () => {
     const result = normalizeCompanyData(data);
     expect(result.id).toBe('comp_001');
     expect(result.name).toBe('Test Company');
-    expect(result.address).toBe('');
-    expect(result.isVerified).toBe(false);
+    expect(result.location).toBe('');
+    expect(result.description).toBe('');
   });
 });

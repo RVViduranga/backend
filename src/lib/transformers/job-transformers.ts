@@ -74,11 +74,14 @@ export function formatSalaryRange(salaryRange: SalaryRangeModel | string, curren
  * Transform legacy JobDetailModel (with string salaryRange) to new format
  */
 export function transformJobDetailToBackendFormat(job: Partial<JobDetailModel> & { salaryRange?: string | SalaryRangeModel; applicationDeadline?: string; closingDate?: string }): JobDetailModel {
+  // Convert SalaryRangeModel to backend string format
+  const salaryRangeObj = parseSalaryRange(job.salaryRange || "0-0");
+  const salaryRangeString = `${salaryRangeObj.min}-${salaryRangeObj.max}`;
+  
   return {
     ...job,
-    salaryRange: parseSalaryRange(job.salaryRange || "Not specified"),
-    closingDate: job.closingDate || job.applicationDeadline || "", // Support both field names
-    postedBy: job.postedBy || "", // Default empty if not provided
+    salaryRange: salaryRangeString, // Backend stores as string "min-max"
+    applicationDeadline: job.closingDate || job.applicationDeadline || "", // Support both field names for backward compatibility
     status: job.status || "Active",
   } as JobDetailModel;
 }
@@ -101,7 +104,6 @@ export function normalizeJobDetail(job: any): JobDetailModel {
     experienceLevel: job.experienceLevel || "",
     applicationDeadline: job.applicationDeadline,
     closingDate: job.closingDate,
-    postedBy: job.postedBy,
     status: job.status,
     industry: job.industry,
     views: job.views,

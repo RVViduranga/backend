@@ -7,7 +7,7 @@ import SafeIcon from '@/components/common/safe-icon'
 interface UploadedFile {
   id: string
   name: string
-  type: 'cv' | 'cover_letter' | 'portfolio'
+  type: 'cv' | 'cover_letter'
   size: number
   uploadedAt: string
   status: 'completed' | 'uploading' | 'error'

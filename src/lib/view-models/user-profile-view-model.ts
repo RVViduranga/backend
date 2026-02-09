@@ -55,13 +55,15 @@ export function composeUserProfileViewModel(
 /**
  * Calculate profile completion percentage (0-100)
  * 
+ * Note: Projects & Work Samples are NOT included in the calculation
+ * 
  * @param user - UserModel
  * @param profile - ProfileModel (optional)
  * @returns Completion percentage (0-100)
  */
 function calculateProfileCompletion(user: UserModel, profile?: ProfileModel): number {
   let completedFields = 0;
-  const totalFields = 7; // Adjust based on required fields
+  const totalFields = 7; // fullName, email, phone, location, headline, education, experience
   
   // User fields
   if (user.fullName) completedFields++; // ✅ Backend uses fullName
@@ -71,9 +73,11 @@ function calculateProfileCompletion(user: UserModel, profile?: ProfileModel): nu
   if (profile?.phone) completedFields++;
   if (profile?.location) completedFields++;
   if (profile?.headline) completedFields++;
-  if (profile?.cvUploaded) completedFields++;
   if (profile?.education && profile.education.length > 0) completedFields++;
   if (profile?.experience && profile.experience.length > 0) completedFields++;
+  
+  // Note: CV and Photo are not included here as they require checking for primary status
+  // Use useProfileCompletion hook for accurate calculation including primary CV/photo
   
   return Math.round((completedFields / totalFields) * 100);
 }
@@ -111,10 +115,18 @@ export function transformLegacyUserProfileModel(
     ? {
         id: `${legacy.id}_profile`, // Generate ID
         user: legacy.id,
-        cv: undefined, // CV URL not available in legacy model
-        experience: 0, // Default, should come from backend
-        qualification: 0, // Default, should come from backend
-        skill: 0, // Default, should come from backend
+        fullName: legacy.fullName,
+        email: legacy.email,
+        phone: legacy.phone,
+        headline: legacy.headline || "",
+        location: legacy.location,
+        avatarUrl: legacy.avatarUrl,
+        cvUploaded: legacy.cvUploaded,
+        education: legacy.education || [],
+        experience: legacy.experience || [],
+        cvs: [], // Legacy doesn't have cvs array
+        mediaFiles: [], // Legacy doesn't have mediaFiles
+        projects: [], // Legacy doesn't have projects
       }
     : undefined;
   

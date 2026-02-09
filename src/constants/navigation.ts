@@ -123,6 +123,7 @@ export const COMPANY_DASHBOARD_LINKS: DashboardLinkModel[] = [
  */
 export const MAIN_NAV_LINKS_USER = [
   { label: "Find Jobs", href: "/jobs" },
+  { label: "Find Candidates", href: "/candidates" },
   { label: "Companies", href: "/companies" },
   { label: "Resources", href: "/resources" },
 ] as const;
@@ -131,6 +132,7 @@ export const MAIN_NAV_LINKS_USER = [
  * Main Navigation Links - Company (Employer)
  */
 export const MAIN_NAV_LINKS_COMPANY = [
+  { label: "Find Candidates", href: "/candidates" },
   { label: "Dashboard", href: "/company-dashboard" },
   { label: "Post Job", href: "/job-post" },
   { label: "Manage Jobs", href: "/manage-jobs" },
@@ -152,11 +154,6 @@ export const USER_DASHBOARD_MENU_ITEMS: DashboardMenuItem[] = [
     href: "/user-dashboard",
   },
   {
-    title: "Job Search",
-    icon: "Search",
-    href: "/jobs",
-  },
-  {
     title: "My Applications",
     icon: "FileText",
     href: "/user-applications",
@@ -169,7 +166,7 @@ export const USER_DASHBOARD_MENU_ITEMS: DashboardMenuItem[] = [
   {
     title: "Profile",
     icon: "User",
-    href: "/user-profile-setup",
+    href: "/user-profile-view",
   },
   {
     title: "Settings",

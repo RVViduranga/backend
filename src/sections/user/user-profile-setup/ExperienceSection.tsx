@@ -226,19 +226,18 @@ export default function ExperienceSection({
                 <Label htmlFor="startDate">Start Date *</Label>
                 <Input
                   id="startDate"
-                  type="text"
+                  type="month"
                   value={formData.startDate}
                   onChange={(e) =>
                     setFormData({ ...formData, startDate: e.target.value })
                   }
-                  placeholder="e.g., 2020"
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="endDate">End Date</Label>
                 <Input
                   id="endDate"
-                  type="text"
+                  type="month"
                   value={formData.endDate || ""}
                   onChange={(e) =>
                     setFormData({
@@ -246,7 +245,6 @@ export default function ExperienceSection({
                       endDate: e.target.value || null,
                     })
                   }
-                  placeholder="e.g., 2023"
                   disabled={isCurrentRole}
                 />
               </div>

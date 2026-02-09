@@ -40,6 +40,13 @@ export default function ProfileForm() {
     cvUploaded: false,
     experience: [],
     education: [],
+    address: "",
+    city: "",
+    state: "",
+    zipCode: "",
+    country: "",
+    dateOfBirth: "",
+    nationality: "",
   }));
   const [isSaving, setIsSaving] = useState(false);
 
@@ -72,9 +79,9 @@ export default function ProfileForm() {
     try {
       await updateProfile(profileData);
       toast.success("Profile saved successfully!");
-      // Navigate to media upload or dashboard
+      // Navigate to profile management page
       setTimeout(() => {
-        navigate("/profile-media-upload");
+        navigate("/user-profile-management");
       }, 500);
     } catch (error) {
       // PRODUCTION: Use logger for production-safe error logging

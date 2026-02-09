@@ -52,6 +52,16 @@ const Resources = lazy(() =>
     default: module.Resources,
   }))
 );
+const PublicProfileView = lazy(() =>
+  import("@/pages/public/public-profile-view").then((module) => ({
+    default: module.default,
+  }))
+);
+const CandidateSearchPage = lazy(() =>
+  import("@/pages/public/candidate-search-page").then((module) => ({
+    default: module.default,
+  }))
+);
 
 // Auth pages - Lazy loaded
 const UnifiedLogin = lazy(() =>
@@ -116,6 +126,11 @@ const ProfileSetup = lazy(() =>
     default: module.ProfileSetup,
   }))
 );
+const ProfileView = lazy(() =>
+  import("@/pages/user/user-profile-view").then((module) => ({
+    default: module.ProfileView,
+  }))
+);
 const PersonalDetailsEdit = lazy(() =>
   import("@/pages/user/personal-details-edit").then((module) => ({
     default: module.PersonalDetailsEdit,
@@ -136,19 +151,14 @@ const ProfilePhotoUpload = lazy(() =>
     default: module.ProfilePhotoUpload,
   }))
 );
-const ProfileMediaUpload = lazy(() =>
-  import("@/pages/user/profile-media-upload").then((module) => ({
-    default: module.ProfileMediaUpload,
-  }))
-);
 const ProfileMediaManagementPage = lazy(() =>
   import("@/pages/user/profile-media-management").then((module) => ({
     default: module.ProfileMediaManagementPage,
   }))
 );
-const PortfolioUpload = lazy(() =>
-  import("@/pages/user/portfolio-upload").then((module) => ({
-    default: module.PortfolioUpload,
+const ProjectsWorkSamples = lazy(() =>
+  import("@/pages/user/projects-work-samples").then((module) => ({
+    default: module.ProjectsWorkSamples,
   }))
 );
 const CVManagement = lazy(() =>
@@ -225,6 +235,10 @@ function AppRoutes() {
         <Route path="/jobs/:id" element={<JobDetailsPage />} />
         <Route path="/companies" element={<CompaniesPage />} />
         <Route path="/companies/:id" element={<CompanyDetailPage />} />
+        <Route path="/candidates" element={<CandidateSearchPage />} />
+        <Route path="/candidates/search" element={<CandidateSearchPage />} />
+        <Route path="/users/:id" element={<PublicProfileView />} />
+        <Route path="/profile/:id" element={<PublicProfileView />} />
         <Route path="/terms-of-service" element={<TermsOfService />} />
         <Route path="/terms" element={<TermsOfService />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
@@ -415,6 +429,14 @@ function AppRoutes() {
           }
         />
         <Route
+          path="/user-profile-view"
+          element={
+            <ProtectedRoute requiredUserType="user">
+              <ProfileView />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/user-profile-setup"
           element={
             <ProtectedRoute requiredUserType="user">
@@ -455,14 +477,6 @@ function AppRoutes() {
           }
         />
         <Route
-          path="/profile-media-upload"
-          element={
-            <ProtectedRoute requiredUserType="user">
-              <ProfileMediaUpload />
-            </ProtectedRoute>
-          }
-        />
-        <Route
           path="/profile-media-management"
           element={
             <ProtectedRoute requiredUserType="user">
@@ -471,10 +485,19 @@ function AppRoutes() {
           }
         />
         <Route
+          path="/projects-work-samples"
+          element={
+            <ProtectedRoute requiredUserType="user">
+              <ProjectsWorkSamples />
+            </ProtectedRoute>
+          }
+        />
+        {/* Legacy route redirect for backward compatibility */}
+        <Route
           path="/portfolio-upload"
           element={
             <ProtectedRoute requiredUserType="user">
-              <PortfolioUpload />
+              <Navigate to="/projects-work-samples" replace />
             </ProtectedRoute>
           }
         />

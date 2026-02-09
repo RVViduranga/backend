@@ -18,7 +18,7 @@ function toCompanySummary(
   return {
     id: detail.id,
     name: detail.name,
-    logoUrl: detail.logoUrl,
+    logoUrl: detail.logoUrl || "",
     activeJobsCount: 0, // Will be calculated by backend
     totalApplicationsReceived: 0, // Will be calculated by backend
     industry: (detail as unknown as { industry?: string }).industry || "",

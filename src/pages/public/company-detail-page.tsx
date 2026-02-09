@@ -127,7 +127,7 @@ export default function CompanyDetailPage() {
               <div className="flex flex-col md:flex-row gap-6">
                 <div className="flex-shrink-0">
                   <img
-                    src={company.logo || company.logoUrl || ""}
+                    src={company.logoUrl || ""}
                     alt={company.name}
                     className="w-24 h-24 rounded-lg object-cover border-2"
                   />
@@ -177,14 +177,14 @@ export default function CompanyDetailPage() {
 
               {/* Company Info Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t">
-                {(company.address || company.headquarters) && (
+                {(company.location || company.headquarters) && (
                   <div className="space-y-1">
                     <p className="text-sm text-muted-foreground">
                       Headquarters
                     </p>
                     <p className="font-medium flex items-center gap-2">
                       <SafeIcon name="MapPin" size={16} />
-                      {company.address || company.headquarters}
+                      {company.location || company.headquarters}
                     </p>
                   </div>
                 )}

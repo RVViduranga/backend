@@ -73,32 +73,6 @@ export default function FilterSidebar({
 
   return (
     <div className="space-y-4">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-lg" id="filters-heading">Filters</h3>
-        {activeFilterCount > 0 && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onClearFilters}
-            className="text-xs h-auto p-0 text-primary hover:text-primary/80 transition-colors"
-            aria-label={`Clear all ${activeFilterCount} active filters`}
-          >
-            Clear All
-          </Button>
-        )}
-      </div>
-
-      {/* Active Filters Badge */}
-      {activeFilterCount > 0 && (
-        <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">
-          <SafeIcon name="Filter" size={14} />
-          {activeFilterCount} active
-        </div>
-      )}
-
-      <Separator />
-
       {/* All Filters in One Accordion */}
       <Accordion 
         type="multiple" 

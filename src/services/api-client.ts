@@ -22,7 +22,17 @@ apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
     if (token && config.headers) {
+      // Always set Authorization header (will override if already set)
       config.headers.Authorization = `Bearer ${token}`;
+      logger.info("[ApiClient] Authorization header added to request:", config.url);
+    } else {
+      logger.warn("[ApiClient] No auth token found for request:", config.url);
+    }
+    
+    // If FormData is being sent, remove Content-Type to let axios set it with boundary
+    if (config.data instanceof FormData) {
+      delete config.headers['Content-Type'];
+      logger.info("[ApiClient] FormData detected, Content-Type will be set by axios with boundary");
     }
 
     return config;

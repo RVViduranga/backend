@@ -24,16 +24,19 @@ import { useCompany } from "@/hooks/use-company-context";
 import { formatRelativeDate } from "@/utils/date";
 import { Loader2 } from "lucide-react";
 import { useMemo, useState } from "react";
-import type { ApplicationStatus } from "@/models/applications";
+import type { ApplicationStatus as BackendApplicationStatus } from "@/models/applications";
 import companyService from "@/services/company";
 import { toast } from "sonner";
 import {
   APPLICATION_STATUS,
   APPLICATION_STATUS_LABELS,
+  type ApplicationStatus,
 } from "@/constants/status";
 import {
   getApplicationStatusColorClass,
   getApplicationStatusIcon,
+  mapBackendToFrontendStatus,
+  mapFrontendToBackendStatus,
 } from "@/utils/status";
 import { logger } from "@/lib/logger";
 
@@ -47,7 +50,7 @@ export default function CompanyApplicationDetailPage() {
     return applications.find((app) => app.id === id);
   }, [applications, id]);
 
-  const handleStatusChange = async (newStatus: ApplicationStatus) => {
+  const handleStatusChange = async (newStatus: BackendApplicationStatus) => {
     if (!application || !id) return;
 
     setIsUpdating(true);
@@ -119,10 +122,11 @@ export default function CompanyApplicationDetailPage() {
 
   return (
     <BaseLayout
-      title={`${application.candidateName} - Application Details - JobCenter`}
-      description={`View application details for ${application.candidateName}`}
+      title={`${application?.candidateName || 'Application'} - Application Details - JobCenter`}
+      description={`View application details for ${application?.candidateName || 'application'}`}
     >
-      <CommonHeader variant="default" />
+      <>
+        <CommonHeader variant="default" />
       <main className="flex-1">
         <div className="container mx-auto px-4 py-8">
           {/* Breadcrumb */}
@@ -240,9 +244,9 @@ export default function CompanyApplicationDetailPage() {
                   <CardTitle>Cover Letter</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {application.coverLetter ? (
+                  {(application as any).coverLetter ? (
                     <p className="text-muted-foreground whitespace-pre-wrap">
-                      {application.coverLetter}
+                      {(application as any).coverLetter}
                     </p>
                   ) : (
                     <div className="text-center py-8">
@@ -265,7 +269,7 @@ export default function CompanyApplicationDetailPage() {
                   <CardTitle>Resume / CV</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {application.cvFilePath ? ( {/* ✅ Backend uses cvFilePath */}
+                  {application.cvFilePath ? (
                     <Button asChild>
                       <a
                         href={application.cvFilePath || (application as any).cvUrl}
@@ -332,40 +336,41 @@ export default function CompanyApplicationDetailPage() {
                         size={14}
                         className="mr-1"
                       />
-                      {APPLICATION_STATUS_LABELS[application.status]}
+                      {APPLICATION_STATUS_LABELS[mapBackendToFrontendStatus(application.status)]}
                     </Badge>
                     <div>
                       <label className="text-sm font-medium mb-2 block">
                         Change Status
                       </label>
                       <Select
-                        value={application.status}
-                        onValueChange={(value) =>
-                          handleStatusChange(value as ApplicationStatus)
-                        }
+                        value={mapBackendToFrontendStatus(application.status)}
+                        onValueChange={(value) => {
+                          const backendStatus = mapFrontendToBackendStatus(value as ApplicationStatus);
+                          handleStatusChange(backendStatus as BackendApplicationStatus);
+                        }}
                         disabled={isUpdating}
                       >
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="pending">
-                            {APPLICATION_STATUS_LABELS.pending}
+                          <SelectItem value={APPLICATION_STATUS.PENDING}>
+                            {APPLICATION_STATUS_LABELS[APPLICATION_STATUS.PENDING]}
                           </SelectItem>
-                          <SelectItem value="reviewing">
-                            {APPLICATION_STATUS_LABELS.reviewing}
+                          <SelectItem value={APPLICATION_STATUS.REVIEWING}>
+                            {APPLICATION_STATUS_LABELS[APPLICATION_STATUS.REVIEWING]}
                           </SelectItem>
-                          <SelectItem value="shortlisted">
-                            {APPLICATION_STATUS_LABELS.shortlisted}
+                          <SelectItem value={APPLICATION_STATUS.SHORTLISTED}>
+                            {APPLICATION_STATUS_LABELS[APPLICATION_STATUS.SHORTLISTED]}
                           </SelectItem>
-                          <SelectItem value="interview">
-                            {APPLICATION_STATUS_LABELS.interview}
+                          <SelectItem value={APPLICATION_STATUS.INTERVIEW}>
+                            {APPLICATION_STATUS_LABELS[APPLICATION_STATUS.INTERVIEW]}
                           </SelectItem>
-                          <SelectItem value="accepted">
-                            {APPLICATION_STATUS_LABELS.accepted}
+                          <SelectItem value={APPLICATION_STATUS.ACCEPTED}>
+                            {APPLICATION_STATUS_LABELS[APPLICATION_STATUS.ACCEPTED]}
                           </SelectItem>
-                          <SelectItem value="rejected">
-                            {APPLICATION_STATUS_LABELS.rejected}
+                          <SelectItem value={APPLICATION_STATUS.REJECTED}>
+                            {APPLICATION_STATUS_LABELS[APPLICATION_STATUS.REJECTED]}
                           </SelectItem>
                         </SelectContent>
                       </Select>
@@ -412,6 +417,7 @@ export default function CompanyApplicationDetailPage() {
       </main>
       <CommonFooter variant="full" />
       <ScrollToTop />
+      </>
     </BaseLayout>
   );
 }

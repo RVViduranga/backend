@@ -173,6 +173,7 @@ export default function UserLoginForm() {
           </Label>
           <Input
             id="email"
+            name="email"
             type="email"
             placeholder="you@example.com"
             value={email}
@@ -184,6 +185,7 @@ export default function UserLoginForm() {
             }}
             disabled={isLoading}
             className={errors.email ? "border-destructive" : ""}
+            autoComplete="email"
             required
           />
           {errors.email && (
@@ -206,6 +208,7 @@ export default function UserLoginForm() {
           <div className="relative">
             <Input
               id="password"
+              name="password"
               type={showPassword ? "text" : "password"}
               placeholder="••••••••"
               value={password}
@@ -217,6 +220,7 @@ export default function UserLoginForm() {
               }}
               disabled={isLoading}
               className={errors.password ? "border-destructive pr-10" : "pr-10"}
+              autoComplete="current-password"
               required
             />
             <Button

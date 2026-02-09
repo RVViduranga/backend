@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import SafeIcon from '@/components/common/safe-icon'
 
 interface FileUploadAreaProps {
-  type: 'cv' | 'cover_letter' | 'portfolio'
+  type: 'cv' | 'cover_letter'
   title: string
   description: string
   acceptedFormats: string
@@ -60,8 +60,6 @@ export default function FileUploadArea({
         return 'FileText'
       case 'cover_letter':
         return 'Mail'
-      case 'portfolio':
-        return 'Briefcase'
       default:
         return 'Upload'
     }

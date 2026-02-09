@@ -1,5 +1,6 @@
 export { useIsMobile } from "./use-mobile";
 export { useJobPostReview } from "./use-job-post-review";
+export { useProfileCompletion, calculateProfileCompletion } from "./use-profile-completion";
 
 // Context hooks
 export { useAuth } from "./use-auth-context";

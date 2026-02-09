@@ -123,6 +123,7 @@ export default function CompanyLoginForm() {
           </Label>
           <Input
             id="email"
+            name="email"
             type="email"
             placeholder="company@example.com"
             value={email}
@@ -132,6 +133,7 @@ export default function CompanyLoginForm() {
             }}
             disabled={isLoading || authLoading}
             className={errors.email ? "border-destructive" : ""}
+            autoComplete="email"
           />
           {errors.email && (
             <p className="text-sm text-destructive">{errors.email}</p>
@@ -152,6 +154,7 @@ export default function CompanyLoginForm() {
           </div>
           <Input
             id="password"
+            name="password"
             type="password"
             placeholder="••••••••"
             value={password}
@@ -162,6 +165,7 @@ export default function CompanyLoginForm() {
             }}
             disabled={isLoading || authLoading}
             className={errors.password ? "border-destructive" : ""}
+            autoComplete="current-password"
           />
           {errors.password && (
             <p className="text-sm text-destructive">{errors.password}</p>

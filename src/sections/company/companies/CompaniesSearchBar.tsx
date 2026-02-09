@@ -21,12 +21,12 @@ export default function CompaniesSearchBar({
   };
 
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-3">
       <div className="flex-1 relative">
         <SafeIcon
           name="Search"
           size={20}
-          className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
+          className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
           aria-hidden="true"
         />
         <Input
@@ -35,13 +35,13 @@ export default function CompaniesSearchBar({
           value={value}
           onChange={(e) => onChange(e.currentTarget.value)}
           onKeyDown={handleKeyDown}
-          className="pl-10 h-12 text-base transition-all focus-visible:ring-2"
+          className="pl-11 h-12 text-base border-2 focus-visible:border-primary focus-visible:ring-0"
           aria-label="Search companies by name or industry"
         />
       </div>
       <Button
         size="lg"
-        className="px-8 transition-all hover:scale-[1.02] active:scale-[0.98]"
+        className="px-8 h-12 text-base font-medium"
         onClick={onSearch}
         aria-label="Search companies"
       >

@@ -6,7 +6,7 @@ import SafeIcon from '@/components/common/safe-icon'
 interface UploadingFile {
   id: string
   name: string
-  type: 'cv' | 'cover_letter' | 'portfolio'
+  type: 'cv' | 'cover_letter'
   progress: number
   status: 'uploading' | 'completed' | 'error'
 }

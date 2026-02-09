@@ -712,8 +712,8 @@ export default function JobApplicationForm() {
               <div>
                 <p className="font-semibold text-sm">Application Deadline</p>
                 <p className="text-sm text-muted-foreground">
-                  {(job.closingDate || (job as any).applicationDeadline)
-                    ? formatDate(job.closingDate || (job as any).applicationDeadline)
+                  {job.applicationDeadline
+                    ? formatDate(job.applicationDeadline)
                     : "Not specified"}
                 </p>
               </div>

@@ -45,25 +45,27 @@ export default function CommonHeader({
     : "/jobs";
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/80 shadow-sm">
-      <div className="container flex h-16 items-center justify-between">
-        {/* Logo */}
-        <Link
-          to={logoHref}
-          className="flex items-center space-x-2.5 group transition-all duration-200 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-lg p-1 -ml-1"
-          aria-label="JobCenter home"
-        >
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-lg shadow-primary/20 group-hover:shadow-primary/30 transition-shadow duration-200">
-            <SafeIcon name="Briefcase" size={21} color="white" />
-          </div>
-          <span className="font-bold text-xl bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent group-hover:from-primary group-hover:to-primary/80 transition-all duration-200">
-            JobCenter
-          </span>
-        </Link>
+    <header className="sticky top-0 z-50 w-full border-b bg-background">
+      <div className="w-full flex h-14 items-center justify-between">
+        {/* Logo - Far Left Corner */}
+        <div className="flex items-center flex-shrink-0 pl-4 sm:pl-6 lg:pl-8">
+          <Link
+            to={logoHref}
+            className="flex items-center space-x-2.5 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-md"
+            aria-label="JobCenter home"
+          >
+            <div className="w-8 h-8 rounded-md bg-primary flex items-center justify-center">
+              <SafeIcon name="Briefcase" size={18} color="white" />
+            </div>
+            <span className="font-semibold text-lg text-foreground">
+              JobCenter
+            </span>
+          </Link>
+        </div>
 
-        {/* Desktop Navigation */}
+        {/* Desktop Navigation - Centered */}
         <nav
-          className="hidden md:flex items-center space-x-1"
+          className="hidden md:flex items-center space-x-1 flex-1 justify-center"
           aria-label="Main navigation"
         >
           {mainNavLinks.map((link) => {
@@ -75,16 +77,16 @@ export default function CommonHeader({
                 key={link.href}
                 to={link.href}
                 aria-current={isActive ? "page" : undefined}
-                className={`relative px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+                className={`relative px-4 py-2 text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
                   isActive
-                    ? "text-primary bg-primary/10"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                    ? "text-foreground"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                {link.label}
+                <span className="relative z-10">{link.label}</span>
                 {isActive && (
                   <span
-                    className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 bg-primary rounded-full"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
                     aria-hidden="true"
                   />
                 )}
@@ -93,20 +95,22 @@ export default function CommonHeader({
           })}
         </nav>
 
-        {/* Desktop Auth Actions */}
-        <div className="hidden md:flex items-center space-x-3">
+        {/* Desktop Auth Actions - Far Right Corner */}
+        <div className="hidden md:flex items-center space-x-3 flex-shrink-0 pr-4 sm:pr-6 lg:pr-8">
           {!isAuthenticated ? (
             <>
               <Button
                 variant="ghost"
                 asChild
-                className="hover:bg-muted/80 transition-all duration-200"
+                size="sm"
+                className="text-sm"
               >
                 <Link to="/login">Log In</Link>
               </Button>
               <Button
                 asChild
-                className="bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-md hover:shadow-lg transition-all duration-200"
+                size="sm"
+                className="text-sm"
               >
                 <Link to="/signup">
                   Sign Up
@@ -114,9 +118,10 @@ export default function CommonHeader({
               </Button>
               {!isCompany && (
                 <Button
-                  variant="secondary"
+                  variant="outline"
                   asChild
-                  className="hover:bg-secondary/80 transition-all duration-200"
+                  size="sm"
+                  className="text-sm"
                 >
                   <Link to="/company-login">For Employers</Link>
                 </Button>
@@ -128,13 +133,13 @@ export default function CommonHeader({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="rounded-full h-10 w-10 border-2 border-border/50 hover:border-primary/50 hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-all duration-200"
+                  className="h-9 w-9 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                   aria-label="User menu"
                   aria-haspopup="true"
                 >
                   <span className="sr-only">Open user menu</span>
                   {user?.name ? (
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/80 text-xs font-semibold text-primary-foreground shadow-md">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-xs font-medium text-primary-foreground">
                       {user.name
                         .split(" ")
                         .map((n) => n[0])
@@ -147,32 +152,30 @@ export default function CommonHeader({
                   )}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-64 p-2">
-                <DropdownMenuLabel className="p-3 bg-gradient-to-br from-primary/5 to-primary/10 rounded-lg mb-2">
-                  <div className="flex flex-col space-y-2">
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm font-semibold leading-none">
-                        {user?.name || user?.email || "My Account"}
-                      </p>
-                      {user?.userType && (
-                        <span className="text-xs px-2.5 py-1 rounded-full bg-primary/15 text-primary font-semibold border border-primary/20">
-                          {user.userType === "company"
-                            ? "Employer"
-                            : "Job Seeker"}
-                        </span>
-                      )}
-                    </div>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel className="p-3">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">
+                      {user?.name || user?.email || "My Account"}
+                    </p>
                     {user?.email && user?.name && (
                       <p className="text-xs leading-none text-muted-foreground truncate">
                         {user.email}
                       </p>
+                    )}
+                    {user?.userType && (
+                      <span className="text-xs text-muted-foreground mt-1">
+                        {user.userType === "company"
+                          ? "Employer"
+                          : "Job Seeker"}
+                      </span>
                     )}
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   asChild
-                  className="rounded-md hover:bg-primary/5 cursor-pointer"
+                  className="cursor-pointer"
                 >
                   <Link
                     to={isCompany ? "/company-dashboard" : "/user-dashboard"}
@@ -181,7 +184,7 @@ export default function CommonHeader({
                     <SafeIcon
                       name="LayoutDashboard"
                       size={16}
-                      className="mr-2.5 text-primary"
+                      className="mr-2"
                       aria-hidden="true"
                     />
                     Dashboard
@@ -190,16 +193,16 @@ export default function CommonHeader({
                 {!isCompany && (
                   <DropdownMenuItem
                     asChild
-                    className="rounded-md hover:bg-primary/5 cursor-pointer"
+                    className="cursor-pointer"
                   >
                     <Link
-                      to="/user-profile-management"
+                      to="/user-profile-view"
                       className="flex items-center"
                     >
                       <SafeIcon
                         name="User"
                         size={16}
-                        className="mr-2.5 text-primary"
+                        className="mr-2"
                         aria-hidden="true"
                       />
                       Profile
@@ -208,7 +211,7 @@ export default function CommonHeader({
                 )}
                 <DropdownMenuItem
                   asChild
-                  className="rounded-md hover:bg-primary/5 cursor-pointer"
+                  className="cursor-pointer"
                 >
                   <Link
                     to={isCompany ? "/company-settings" : "/user-settings"}
@@ -217,7 +220,7 @@ export default function CommonHeader({
                     <SafeIcon
                       name="Settings"
                       size={16}
-                      className="mr-2.5 text-primary"
+                      className="mr-2"
                       aria-hidden="true"
                     />
                     Settings
@@ -231,12 +234,12 @@ export default function CommonHeader({
                     navigate("/jobs");
                     setMobileMenuOpen(false);
                   }}
-                  className="rounded-md cursor-pointer text-destructive focus:text-destructive hover:bg-destructive/10 transition-colors"
+                  className="cursor-pointer text-destructive focus:text-destructive"
                 >
                   <SafeIcon
                     name="LogOut"
                     size={16}
-                    className="mr-2.5"
+                    className="mr-2"
                     aria-hidden="true"
                   />
                   Log Out
@@ -246,26 +249,27 @@ export default function CommonHeader({
           )}
         </div>
 
-        {/* Mobile Menu */}
-        <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-          <SheetTrigger asChild className="md:hidden">
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label="Open navigation menu"
-              aria-expanded={mobileMenuOpen}
-              className="h-10 w-10 rounded-lg hover:bg-primary/10 hover:text-primary transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-            >
-              <SafeIcon name="Menu" size={24} aria-hidden="true" />
-              <span className="sr-only">Menu</span>
-            </Button>
-          </SheetTrigger>
+        {/* Mobile Menu - Far Right Corner */}
+        <div className="flex items-center md:hidden pr-4 sm:pr-6 lg:pr-8">
+          <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+            <SheetTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label="Open navigation menu"
+                aria-expanded={mobileMenuOpen}
+                className="h-9 w-9 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+              >
+                <SafeIcon name="Menu" size={20} aria-hidden="true" />
+                <span className="sr-only">Menu</span>
+              </Button>
+            </SheetTrigger>
           <SheetContent
             side="right"
-            className="w-[320px] sm:w-[400px] bg-gradient-to-b from-background to-muted/20"
+            className="w-[300px] sm:w-[380px]"
           >
             <nav
-              className="flex flex-col space-y-2 mt-8"
+              className="flex flex-col space-y-1 mt-6"
               aria-label="Mobile navigation"
             >
               {mainNavLinks.map((link) => {
@@ -277,10 +281,10 @@ export default function CommonHeader({
                     key={link.href}
                     to={link.href}
                     aria-current={isActive ? "page" : undefined}
-                    className={`px-4 py-3 text-base font-medium rounded-lg transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+                    className={`px-3 py-2.5 text-sm font-medium rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
                       isActive
-                        ? "text-primary bg-primary/10 shadow-sm"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                        ? "text-foreground bg-muted"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted"
                     }`}
                     onClick={() => setMobileMenuOpen(false)}
                   >
@@ -288,12 +292,13 @@ export default function CommonHeader({
                   </Link>
                 );
               })}
-              <div className="pt-6 border-t border-border/50 space-y-3 mt-4">
+              <div className="pt-4 border-t space-y-2 mt-4">
                 {!isAuthenticated ? (
                   <>
                     <Button
                       variant="outline"
-                      className="w-full h-11 hover:bg-muted/80 transition-all duration-200"
+                      className="w-full"
+                      size="sm"
                       asChild
                     >
                       <Link
@@ -304,7 +309,8 @@ export default function CommonHeader({
                       </Link>
                     </Button>
                     <Button
-                      className="w-full h-11 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-md hover:shadow-lg transition-all duration-200"
+                      className="w-full"
+                      size="sm"
                       asChild
                     >
                       <Link
@@ -316,8 +322,9 @@ export default function CommonHeader({
                     </Button>
                     {!isCompany && (
                       <Button
-                        variant="secondary"
-                        className="w-full h-11 hover:bg-secondary/80 transition-all duration-200"
+                        variant="outline"
+                        className="w-full"
+                        size="sm"
                         asChild
                       >
                         <Link
@@ -331,10 +338,10 @@ export default function CommonHeader({
                   </>
                 ) : (
                   <>
-                    <div className="pb-3 mb-3 border-b border-border/50">
-                      <div className="flex items-center gap-3 px-3 py-2 rounded-lg bg-gradient-to-br from-primary/5 to-primary/10">
+                    <div className="pb-3 mb-3 border-b">
+                      <div className="flex items-center gap-3 px-3 py-2">
                         {user?.name ? (
-                          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/80 text-sm font-semibold text-primary-foreground flex-shrink-0 shadow-md">
+                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-xs font-medium text-primary-foreground flex-shrink-0">
                             {user.name
                               .split(" ")
                               .map((n) => n[0])
@@ -343,12 +350,12 @@ export default function CommonHeader({
                               .slice(0, 2)}
                           </div>
                         ) : (
-                          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-muted flex-shrink-0">
-                            <SafeIcon name="User" size={20} />
+                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted flex-shrink-0">
+                            <SafeIcon name="User" size={18} />
                           </div>
                         )}
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold truncate">
+                          <p className="text-sm font-medium truncate">
                             {user?.name || user?.email || "My Account"}
                           </p>
                           {user?.userType && (
@@ -362,8 +369,9 @@ export default function CommonHeader({
                       </div>
                     </div>
                     <Button
-                      variant="outline"
-                      className="w-full justify-start h-11 rounded-lg hover:bg-primary/5 hover:text-primary transition-all duration-200"
+                      variant="ghost"
+                      className="w-full justify-start"
+                      size="sm"
                       asChild
                     >
                       <Link
@@ -375,7 +383,7 @@ export default function CommonHeader({
                         <SafeIcon
                           name="LayoutDashboard"
                           size={16}
-                          className="mr-2.5"
+                          className="mr-2"
                           aria-hidden="true"
                         />
                         Dashboard
@@ -383,18 +391,19 @@ export default function CommonHeader({
                     </Button>
                     {!isCompany && (
                       <Button
-                        variant="outline"
-                        className="w-full justify-start h-11 rounded-lg hover:bg-primary/5 hover:text-primary transition-all duration-200"
+                        variant="ghost"
+                        className="w-full justify-start"
+                        size="sm"
                         asChild
                       >
                         <Link
-                          to="/user-profile-management"
+                          to="/user-profile-view"
                           onClick={() => setMobileMenuOpen(false)}
                         >
                           <SafeIcon
                             name="User"
                             size={16}
-                            className="mr-2.5"
+                            className="mr-2"
                             aria-hidden="true"
                           />
                           Profile
@@ -402,8 +411,9 @@ export default function CommonHeader({
                       </Button>
                     )}
                     <Button
-                      variant="outline"
-                      className="w-full justify-start h-11 rounded-lg hover:bg-primary/5 hover:text-primary transition-all duration-200"
+                      variant="ghost"
+                      className="w-full justify-start"
+                      size="sm"
                       asChild
                     >
                       <Link
@@ -413,15 +423,16 @@ export default function CommonHeader({
                         <SafeIcon
                           name="Settings"
                           size={16}
-                          className="mr-2.5"
+                          className="mr-2"
                           aria-hidden="true"
                         />
                         Settings
                       </Link>
                     </Button>
                     <Button
-                      variant="destructive"
-                      className="w-full justify-start h-11 mt-2 rounded-lg hover:bg-destructive/90 transition-all duration-200"
+                      variant="ghost"
+                      className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10 mt-2"
+                      size="sm"
                       onClick={() => {
                         logout();
                         toast.success("Logged out successfully");
@@ -429,7 +440,7 @@ export default function CommonHeader({
                         setMobileMenuOpen(false);
                       }}
                     >
-                      <SafeIcon name="LogOut" size={16} className="mr-2.5" />
+                      <SafeIcon name="LogOut" size={16} className="mr-2" />
                       Log Out
                     </Button>
                   </>
@@ -437,7 +448,8 @@ export default function CommonHeader({
               </div>
             </nav>
           </SheetContent>
-        </Sheet>
+          </Sheet>
+        </div>
       </div>
     </header>
   );

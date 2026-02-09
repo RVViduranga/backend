@@ -232,8 +232,10 @@ export const companyService = {
     );
     // Transform backend paginated response to frontend format
     const backendData = response.data.data;
+    // Handle empty results - return empty array, not error
+    const items = backendData?.items || [];
     return {
-      companies: backendData.items.map(company => 
+      companies: items.map(company => 
         transformCompanyToDetailModel(company, {
           description: company.description || "",
           website: company.website,
@@ -242,9 +244,9 @@ export const companyService = {
           totalApplicationsReceived: company.totalApplicationsReceived,
         })
       ),
-      total: backendData.total,
-      page: backendData.page,
-      limit: backendData.limit,
+      total: backendData?.total || 0,
+      page: backendData?.page || (params?.page || 1),
+      limit: backendData?.limit || (params?.limit || 20),
     };
   },
 

@@ -85,8 +85,8 @@ describe('transformJobDetailToBackendFormat', () => {
     } as Parameters<typeof transformJobDetailToBackendFormat>[0];
 
     const result = transformJobDetailToBackendFormat(job);
-    expect(result.salaryRange).toEqual({ min: 100000, max: 200000 });
-    expect(result.closingDate).toBe('2025-12-31');
+    expect(result.salaryRange).toBe('100000-200000'); // Backend stores as string
+    expect(result.applicationDeadline).toBe('2025-12-31');
   });
 
   it('should use closingDate over applicationDeadline', () => {
@@ -98,7 +98,7 @@ describe('transformJobDetailToBackendFormat', () => {
     } as Parameters<typeof transformJobDetailToBackendFormat>[0];
 
     const result = transformJobDetailToBackendFormat(job);
-    expect(result.closingDate).toBe('2025-12-31');
+    expect(result.applicationDeadline).toBe('2025-12-31');
   });
 
   it('should use applicationDeadline if closingDate not provided', () => {
@@ -109,17 +109,16 @@ describe('transformJobDetailToBackendFormat', () => {
     } as Parameters<typeof transformJobDetailToBackendFormat>[0];
 
     const result = transformJobDetailToBackendFormat(job);
-    expect(result.closingDate).toBe('2025-12-31');
+    expect(result.applicationDeadline).toBe('2025-12-31');
   });
 
-  it('should set default postedBy and status', () => {
+  it('should set default status', () => {
     const job = {
       id: 'job_001',
       title: 'Software Engineer',
     } as Parameters<typeof transformJobDetailToBackendFormat>[0];
 
     const result = transformJobDetailToBackendFormat(job);
-    expect(result.postedBy).toBe('');
     expect(result.status).toBe('Active');
   });
 });
@@ -145,8 +144,8 @@ describe('normalizeJobDetail', () => {
 
     const result = normalizeJobDetail(job);
     expect(result.id).toBe('job_001');
-    expect(result.salaryRange).toEqual({ min: 100000, max: 200000 });
-    expect(result.closingDate).toBe('2025-12-31');
+    expect(result.salaryRange).toBe('100000-200000'); // Backend stores as string
+    expect(result.applicationDeadline).toBe('2025-12-31');
   });
 
   it('should handle missing optional fields', () => {

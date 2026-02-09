@@ -314,9 +314,8 @@ export const jobService = {
               foundJob.experienceLevel ||
               MOCK_JOB_DETAIL.experienceLevel ||
               "Not specified",
-            closingDate:
-              foundJob.closingDate ||
-              (foundJob as any).applicationDeadline || // Support legacy field name
+            applicationDeadline:
+              foundJob.applicationDeadline ||
               (MOCK_JOB_DETAIL as any).applicationDeadline ||
               "",
             company: foundJob.company || MOCK_JOB_DETAIL.company,

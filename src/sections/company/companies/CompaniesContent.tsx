@@ -128,32 +128,23 @@ export default function CompaniesContent() {
     );
   }
 
-  // Error state
-  if (isError && queryError) {
-    return (
-      <div className="flex-1 flex flex-col items-center justify-center min-h-[400px] p-6">
-        <div className="text-center">
-          <p className="text-destructive mb-4">
-            Failed to load companies. Please try again.
-          </p>
-          <Button onClick={() => window.location.reload()} variant="outline">
-            Reload Page
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="flex-1 flex flex-col">
-      {/* Search Bar Section */}
-      <div className="bg-gradient-to-b from-primary/5 to-transparent border-b">
-        <div className="container mx-auto px-4 py-8">
-          <div className="max-w-2xl mx-auto">
-            <h1 className="text-3xl font-bold mb-2">Discover Top Companies</h1>
-            <p className="text-muted-foreground mb-6">
+    <div className="flex-1 flex flex-col bg-background">
+      {/* Hero Section */}
+      <div className="border-b bg-card">
+        <div className="w-full px-4 sm:px-6 lg:px-8 py-10">
+          {/* Header */}
+          <div className="mb-8">
+            <h1 className="text-3xl md:text-4xl font-bold mb-3 text-foreground">
+              Discover Top Companies
+            </h1>
+            <p className="text-base text-muted-foreground">
               Explore leading companies and find your next career opportunity
             </p>
+          </div>
+
+          {/* Search Bar */}
+          <div className="mb-8">
             <CompaniesSearchBar
               value={searchQuery}
               onChange={setSearchQuery}
@@ -168,33 +159,43 @@ export default function CompaniesContent() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <div className="flex-1 w-full px-4 sm:px-6 lg:px-8 py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Sidebar - Desktop */}
           <div className="hidden lg:block">
-            <CompaniesFilterSidebar
-              filterOptions={{ industries: [...INDUSTRY_OPTIONS] }}
-              filters={filters}
-              onFilterChange={handleFilterChange}
-              activeFilterCount={activeFilterCount}
-              onClearFilters={handleClearFilters}
-            />
+            <div 
+              className="sticky top-6 max-h-[calc(100vh-120px)] overflow-y-auto overflow-x-hidden filter-sidebar-scroll"
+              style={{
+                scrollbarWidth: 'thin',
+                scrollbarColor: 'rgba(0, 0, 0, 0.2) transparent'
+              }}
+            >
+              <div className="pr-2">
+                <CompaniesFilterSidebar
+                  filterOptions={{ industries: [...INDUSTRY_OPTIONS] }}
+                  filters={filters}
+                  onFilterChange={handleFilterChange}
+                  activeFilterCount={activeFilterCount}
+                  onClearFilters={handleClearFilters}
+                />
+              </div>
+            </div>
           </div>
 
           {/* Results Section */}
           <div className="lg:col-span-3">
             {/* Mobile Filter Toggle */}
-            <div className="lg:hidden mb-6">
+            <div className="lg:hidden mb-4">
               <Button
                 variant="outline"
-                className="w-full justify-between"
+                className="w-full justify-between h-11"
                 onClick={() => setMobileFilterOpen(!mobileFilterOpen)}
               >
                 <span className="flex items-center gap-2">
                   <SafeIcon name="Filter" size={18} aria-hidden="true" />
-                  Filters
+                  <span className="font-medium">Filters</span>
                   {activeFilterCount > 0 && (
-                    <span className="ml-2 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-primary rounded-full">
+                    <span className="ml-2 inline-flex items-center justify-center w-5 h-5 text-xs font-semibold text-white bg-primary rounded-full">
                       {activeFilterCount}
                     </span>
                   )}
@@ -209,7 +210,7 @@ export default function CompaniesContent() {
 
             {/* Mobile Filter Panel */}
             {mobileFilterOpen && (
-              <div className="lg:hidden mb-6 p-4 border rounded-lg bg-card">
+              <div className="lg:hidden mb-6 p-4 border rounded-lg bg-card shadow-sm">
                 <CompaniesFilterSidebar
                   filterOptions={{ industries: [...INDUSTRY_OPTIONS] }}
                   filters={filters}
@@ -219,8 +220,29 @@ export default function CompaniesContent() {
                 />
               </div>
             )}
+
+            {/* Error State */}
+            {isError && queryError && !isLoading && (
+              <div className="py-16 text-center">
+                <div className="max-w-md mx-auto">
+                  <SafeIcon
+                    name="AlertCircle"
+                    size={48}
+                    className="mx-auto mb-4 text-destructive"
+                  />
+                  <p className="text-lg font-semibold mb-2">Failed to load companies</p>
+                  <p className="text-sm text-muted-foreground mb-6">
+                    Please try again or refresh the page
+                  </p>
+                  <Button onClick={() => window.location.reload()} variant="outline">
+                    Reload Page
+                  </Button>
+                </div>
+              </div>
+            )}
+
             {/* Results Header */}
-            {!isLoading && (
+            {!isLoading && !isError && (
               <CompaniesResultsHeader
                 resultCount={filteredCompanies.length}
                 sortBy={sortBy}
@@ -231,7 +253,7 @@ export default function CompaniesContent() {
             )}
 
             {/* Companies List */}
-            {!isLoading && (
+            {!isLoading && !isError && (
               <div id="companies-results" className="scroll-mt-4">
                 {filteredCompanies.length > 0 ? (
                   <>
@@ -255,9 +277,9 @@ export default function CompaniesContent() {
                     />
                     {/* Show loading indicator while fetching in background */}
                     {isFetching && !isLoading && (
-                      <div className="flex items-center justify-center py-4">
-                        <Loader2 className="h-5 w-5 animate-spin text-primary" />
-                        <span className="ml-2 text-sm text-muted-foreground">
+                      <div className="flex items-center justify-center py-6 mt-4 border-t">
+                        <Loader2 className="h-5 w-5 animate-spin text-primary mr-2" />
+                        <span className="text-sm text-muted-foreground">
                           Updating results...
                         </span>
                       </div>

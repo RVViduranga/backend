@@ -8,7 +8,7 @@ import type {
   EducationModel as Education,
   ExperienceModel as Experience,
   MediaFileModel as MediaFile,
-  CVModel as UserCV,
+  UserCV,
   DashboardStatModel as DashboardStat,
 } from "@/models/profiles";
 
@@ -404,17 +404,21 @@ export const MOCK_USER_CVS_1: UserCV[] = [
   {
     id: "cv_001",
     name: "Anya Sharma_Tech_CV_2025.pdf",
-    dateUploaded: "2025-11-01",
+    fileName: "Anya Sharma_Tech_CV_2025.pdf",
+    uploadedDate: "2025-11-01",
+    fileSize: "0.8 MB",
     isPrimary: true,
-    sizeMB: 0.8,
+    format: "PDF",
     downloadUrl: "/api/download/cv_001",
   },
   {
     id: "cv_002",
     name: "Anya Sharma_Finance_CV_v2.pdf",
-    dateUploaded: "2025-08-15",
+    fileName: "Anya Sharma_Finance_CV_v2.pdf",
+    uploadedDate: "2025-08-15",
+    fileSize: "1.2 MB",
     isPrimary: false,
-    sizeMB: 1.2,
+    format: "PDF",
     downloadUrl: "/api/download/cv_002",
   },
 ];
@@ -427,9 +431,11 @@ export const MOCK_USER_CVS_2: UserCV[] = [
   {
     id: "cv_003",
     name: "John Doe_Data_Analyst_CV.pdf",
-    dateUploaded: "2025-10-20",
+    fileName: "John Doe_Data_Analyst_CV.pdf",
+    uploadedDate: "2025-10-20",
+    fileSize: "1.0 MB",
     isPrimary: true,
-    sizeMB: 1.0,
+    format: "PDF",
     downloadUrl: "/api/download/cv_003",
   },
 ];
@@ -442,9 +448,11 @@ export const MOCK_USER_CVS_3: UserCV[] = [
   {
     id: "cv_004",
     name: "John_Smith_Developer_CV.pdf",
-    dateUploaded: "2025-11-10",
+    fileName: "John_Smith_Developer_CV.pdf",
+    uploadedDate: "2025-11-10",
+    fileSize: "0.9 MB",
     isPrimary: true,
-    sizeMB: 0.9,
+    format: "PDF",
     downloadUrl: "/api/download/cv_004",
   },
 ];
@@ -453,9 +461,11 @@ export const MOCK_USER_CVS_4: UserCV[] = [
   {
     id: "cv_005",
     name: "Sarah_Johnson_CV.pdf",
-    dateUploaded: "2025-11-08",
+    fileName: "Sarah_Johnson_CV.pdf",
+    uploadedDate: "2025-11-08",
+    fileSize: "0.7 MB",
     isPrimary: true,
-    sizeMB: 0.7,
+    format: "PDF",
     downloadUrl: "/api/download/cv_005",
   },
 ];
@@ -464,9 +474,11 @@ export const MOCK_USER_CVS_5: UserCV[] = [
   {
     id: "cv_006",
     name: "Michael_Chen_Senior_Developer_CV.pdf",
-    dateUploaded: "2025-11-05",
+    fileName: "Michael_Chen_Senior_Developer_CV.pdf",
+    uploadedDate: "2025-11-05",
+    fileSize: "1.1 MB",
     isPrimary: true,
-    sizeMB: 1.1,
+    format: "PDF",
     downloadUrl: "/api/download/cv_006",
   },
 ];
@@ -475,9 +487,11 @@ export const MOCK_USER_CVS_6: UserCV[] = [
   {
     id: "cv_007",
     name: "Emma_Williams_Data_Analyst_CV.pdf",
-    dateUploaded: "2025-11-12",
+    fileName: "Emma_Williams_Data_Analyst_CV.pdf",
+    uploadedDate: "2025-11-12",
+    fileSize: "0.8 MB",
     isPrimary: true,
-    sizeMB: 0.8,
+    format: "PDF",
     downloadUrl: "/api/download/cv_007",
   },
 ];
@@ -486,9 +500,11 @@ export const MOCK_USER_CVS_7: UserCV[] = [
   {
     id: "cv_008",
     name: "David_Brown_Analyst_CV.pdf",
-    dateUploaded: "2025-11-11",
+    fileName: "David_Brown_Analyst_CV.pdf",
+    uploadedDate: "2025-11-11",
+    fileSize: "0.9 MB",
     isPrimary: true,
-    sizeMB: 0.9,
+    format: "PDF",
     downloadUrl: "/api/download/cv_008",
   },
 ];
@@ -497,9 +513,11 @@ export const MOCK_USER_CVS_8: UserCV[] = [
   {
     id: "cv_009",
     name: "Lisa_Anderson_Marketing_CV.pdf",
-    dateUploaded: "2025-11-09",
+    fileName: "Lisa_Anderson_Marketing_CV.pdf",
+    uploadedDate: "2025-11-09",
+    fileSize: "0.6 MB",
     isPrimary: true,
-    sizeMB: 0.6,
+    format: "PDF",
     downloadUrl: "/api/download/cv_009",
   },
 ];
@@ -508,9 +526,11 @@ export const MOCK_USER_CVS_9: UserCV[] = [
   {
     id: "cv_010",
     name: "Robert_Taylor_Developer_CV.pdf",
-    dateUploaded: "2025-11-07",
+    fileName: "Robert_Taylor_Developer_CV.pdf",
+    uploadedDate: "2025-11-07",
+    fileSize: "0.85 MB",
     isPrimary: true,
-    sizeMB: 0.85,
+    format: "PDF",
     downloadUrl: "/api/download/cv_010",
   },
 ];
@@ -542,7 +562,7 @@ export const MOCK_MEDIA_FILES_1: MediaFile[] = [
   {
     id: "media_001",
     fileName: "Profile_Photo_Anya.jpg",
-    fileType: "Portfolio Image",
+      fileType: "Profile Photo",
     uploadDate: "2025-10-20",
     url: "https://spark-builder.s3.us-east-1.amazonaws.com/image/2025/11/17/cc3a01b4-c36f-4996-8152-0b711dca818e.png",
     sizeKB: 350,
@@ -550,7 +570,7 @@ export const MOCK_MEDIA_FILES_1: MediaFile[] = [
   {
     id: "media_002",
     fileName: "Project_Apollo_Case_Study.pdf",
-    fileType: "Portfolio Document",
+      fileType: "Profile Photo",
     uploadDate: "2025-09-10",
     url: "https://spark-builder.s3.us-east-1.amazonaws.com/image/2025/11/17/17b8fd19-c2a8-4b3a-98e2-9dd4fc63622a.png",
     sizeKB: 2900,
@@ -558,7 +578,7 @@ export const MOCK_MEDIA_FILES_1: MediaFile[] = [
   {
     id: "media_003",
     fileName: "Scalability_Report_Summary.docx",
-    fileType: "Portfolio Document",
+      fileType: "Profile Photo",
     uploadDate: "2025-07-01",
     url: "https://spark-builder.s3.us-east-1.amazonaws.com/image/2025/11/17/4ab894d1-309e-448d-9742-6deb491c6bb8.png",
     sizeKB: 800,
@@ -573,7 +593,7 @@ export const MOCK_MEDIA_FILES_2: MediaFile[] = [
   {
     id: "media_004",
     fileName: "John_Doe_Profile.jpg",
-    fileType: "Portfolio Image",
+      fileType: "Profile Photo",
     uploadDate: "2025-11-01",
     url: "https://spark-builder.s3.us-east-1.amazonaws.com/image/2025/11/17/cc3a01b4-c36f-4996-8152-0b711dca818e.png",
     sizeKB: 280,
@@ -581,7 +601,7 @@ export const MOCK_MEDIA_FILES_2: MediaFile[] = [
   {
     id: "media_005",
     fileName: "Financial_Analysis_Report.pdf",
-    fileType: "Portfolio Document",
+      fileType: "Profile Photo",
     uploadDate: "2025-10-15",
     url: "https://spark-builder.s3.us-east-1.amazonaws.com/image/2025/11/17/17b8fd19-c2a8-4b3a-98e2-9dd4fc63622a.png",
     sizeKB: 1500,
@@ -596,7 +616,7 @@ export const MOCK_MEDIA_FILES_3: MediaFile[] = [
   {
     id: "media_006",
     fileName: "John_Smith_Portfolio.jpg",
-    fileType: "Portfolio Image",
+      fileType: "Profile Photo",
     uploadDate: "2025-10-25",
     url: "https://spark-builder.s3.us-east-1.amazonaws.com/image/2025/11/17/cc3a01b4-c36f-4996-8152-0b711dca818e.png",
     sizeKB: 320,
@@ -607,7 +627,7 @@ export const MOCK_MEDIA_FILES_4: MediaFile[] = [
   {
     id: "media_007",
     fileName: "Sarah_Johnson_Portfolio.jpg",
-    fileType: "Portfolio Image",
+      fileType: "Profile Photo",
     uploadDate: "2025-11-05",
     url: "https://spark-builder.s3.us-east-1.amazonaws.com/image/2025/11/17/cc3a01b4-c36f-4996-8152-0b711dca818e.png",
     sizeKB: 280,
@@ -618,7 +638,7 @@ export const MOCK_MEDIA_FILES_5: MediaFile[] = [
   {
     id: "media_008",
     fileName: "Michael_Chen_Portfolio.pdf",
-    fileType: "Portfolio Document",
+      fileType: "Profile Photo",
     uploadDate: "2025-10-30",
     url: "https://spark-builder.s3.us-east-1.amazonaws.com/image/2025/11/17/17b8fd19-c2a8-4b3a-98e2-9dd4fc63622a.png",
     sizeKB: 2100,
@@ -629,7 +649,7 @@ export const MOCK_MEDIA_FILES_6: MediaFile[] = [
   {
     id: "media_009",
     fileName: "Emma_Williams_Portfolio.jpg",
-    fileType: "Portfolio Image",
+      fileType: "Profile Photo",
     uploadDate: "2025-11-08",
     url: "https://spark-builder.s3.us-east-1.amazonaws.com/image/2025/11/17/cc3a01b4-c36f-4996-8152-0b711dca818e.png",
     sizeKB: 310,
@@ -640,7 +660,7 @@ export const MOCK_MEDIA_FILES_7: MediaFile[] = [
   {
     id: "media_010",
     fileName: "David_Brown_Portfolio.jpg",
-    fileType: "Portfolio Image",
+      fileType: "Profile Photo",
     uploadDate: "2025-11-06",
     url: "https://spark-builder.s3.us-east-1.amazonaws.com/image/2025/11/17/cc3a01b4-c36f-4996-8152-0b711dca818e.png",
     sizeKB: 295,
@@ -651,7 +671,7 @@ export const MOCK_MEDIA_FILES_8: MediaFile[] = [
   {
     id: "media_011",
     fileName: "Lisa_Anderson_Portfolio.jpg",
-    fileType: "Portfolio Image",
+      fileType: "Profile Photo",
     uploadDate: "2025-11-04",
     url: "https://spark-builder.s3.us-east-1.amazonaws.com/image/2025/11/17/cc3a01b4-c36f-4996-8152-0b711dca818e.png",
     sizeKB: 260,
@@ -662,7 +682,7 @@ export const MOCK_MEDIA_FILES_9: MediaFile[] = [
   {
     id: "media_012",
     fileName: "Robert_Taylor_Portfolio.pdf",
-    fileType: "Portfolio Document",
+      fileType: "Profile Photo",
     uploadDate: "2025-11-02",
     url: "https://spark-builder.s3.us-east-1.amazonaws.com/image/2025/11/17/17b8fd19-c2a8-4b3a-98e2-9dd4fc63622a.png",
     sizeKB: 1850,

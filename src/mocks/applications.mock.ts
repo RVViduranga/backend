@@ -148,7 +148,7 @@ export const MOCK_USER_APPLICATIONS_MAP: Record<string, UserApplication[]> = {
       id: "app_user_001_1",
       jobId: "job_001", // UserApplicationModel still uses jobId
       appliedDate: "2025-11-15", // UserApplicationModel still uses appliedDate
-      status: "reviewing",
+      status: "Reviewed",
       job: createJobSummary(
         "job_001",
         "Senior Full Stack Developer (React/Node)",
@@ -160,7 +160,7 @@ export const MOCK_USER_APPLICATIONS_MAP: Record<string, UserApplication[]> = {
       id: "app_user_001_2",
       jobId: "job_002",
       appliedDate: "2025-11-10",
-      status: "shortlisted",
+      status: "Reviewed",
       job: createJobSummary(
         "job_002",
         "Data Analyst - Financial Products",
@@ -176,7 +176,7 @@ export const MOCK_USER_APPLICATIONS_MAP: Record<string, UserApplication[]> = {
       id: "app_user_002_1",
       jobId: "job_002",
       appliedDate: "2025-11-12",
-      status: "pending",
+      status: "Pending",
       job: createJobSummary(
         "job_002",
         "Data Analyst - Financial Products",
@@ -192,7 +192,7 @@ export const MOCK_USER_APPLICATIONS_MAP: Record<string, UserApplication[]> = {
       id: "app_user_app_001_1",
       jobId: "job_001",
       appliedDate: "2025-11-15",
-      status: "reviewing",
+      status: "Reviewed",
       job: createJobSummary(
         "job_001",
         "Senior Full Stack Developer (React/Node)",
@@ -208,7 +208,7 @@ export const MOCK_USER_APPLICATIONS_MAP: Record<string, UserApplication[]> = {
       id: "app_user_app_002_1",
       jobId: "job_001",
       appliedDate: "2025-11-14",
-      status: "shortlisted",
+      status: "Reviewed",
       job: createJobSummary(
         "job_001",
         "Senior Full Stack Developer (React/Node)",
@@ -220,7 +220,7 @@ export const MOCK_USER_APPLICATIONS_MAP: Record<string, UserApplication[]> = {
       id: "app_user_app_002_2",
       jobId: "job_003",
       appliedDate: "2025-11-10",
-      status: "pending",
+      status: "Pending",
       job: createJobSummary(
         "job_003",
         "Junior Marketing Associate",
@@ -236,7 +236,7 @@ export const MOCK_USER_APPLICATIONS_MAP: Record<string, UserApplication[]> = {
       id: "app_user_app_003_1",
       jobId: "job_001",
       appliedDate: "2025-11-13",
-      status: "interview",
+      status: "Reviewed",
       job: createJobSummary(
         "job_001",
         "Senior Full Stack Developer (React/Node)",
@@ -252,7 +252,7 @@ export const MOCK_USER_APPLICATIONS_MAP: Record<string, UserApplication[]> = {
       id: "app_user_app_004_1",
       jobId: "job_002",
       appliedDate: "2025-11-12",
-      status: "pending",
+      status: "Pending",
       job: createJobSummary(
         "job_002",
         "Data Analyst - Financial Products",
@@ -268,7 +268,7 @@ export const MOCK_USER_APPLICATIONS_MAP: Record<string, UserApplication[]> = {
       id: "app_user_app_005_1",
       jobId: "job_002",
       appliedDate: "2025-11-11",
-      status: "reviewing",
+      status: "Reviewed",
       job: createJobSummary(
         "job_002",
         "Data Analyst - Financial Products",
@@ -284,7 +284,7 @@ export const MOCK_USER_APPLICATIONS_MAP: Record<string, UserApplication[]> = {
       id: "app_user_app_006_1",
       jobId: "job_003",
       appliedDate: "2025-11-10",
-      status: "accepted",
+      status: "Accepted",
       job: createJobSummary(
         "job_003",
         "Junior Marketing Associate",
@@ -300,7 +300,7 @@ export const MOCK_USER_APPLICATIONS_MAP: Record<string, UserApplication[]> = {
       id: "app_user_app_007_1",
       jobId: "job_001",
       appliedDate: "2025-11-09",
-      status: "rejected",
+      status: "Rejected",
       job: createJobSummary(
         "job_001",
         "Senior Full Stack Developer (React/Node)",
@@ -312,7 +312,7 @@ export const MOCK_USER_APPLICATIONS_MAP: Record<string, UserApplication[]> = {
       id: "app_user_app_007_2",
       jobId: "job_004",
       appliedDate: "2025-10-20",
-      status: "reviewing",
+      status: "Reviewed",
       job: createJobSummary(
         "job_004",
         "Mechanical Engineer Trainee",

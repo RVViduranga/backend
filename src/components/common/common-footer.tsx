@@ -79,11 +79,11 @@ export default function CommonFooter({ variant = "full" }: CommonFooterProps) {
   if (variant === "simple") {
     return (
       <footer
-        className="border-t border-border/40 bg-background/95 backdrop-blur-sm mt-auto"
+        className="border-t border-border/40 bg-background/95 backdrop-blur-sm mt-auto w-full"
         role="contentinfo"
         aria-label="Footer"
       >
-        <div className="container mx-auto px-4 py-6">
+        <div className="w-full px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
             <p className="text-sm text-muted-foreground">
               © {currentYear} JobCenter. All rights reserved.

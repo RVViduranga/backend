@@ -8,7 +8,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,9 +27,11 @@ import {
 } from "@/components/ui/alert-dialog";
 import SafeIcon from "@/components/common/safe-icon";
 import MediaUploadSection from "./MediaUploadSection";
+import ProfilePhotoUploadDialogForm from "./ProfilePhotoUploadDialogForm";
 import { toast } from "sonner";
 import { logger } from "@/lib/logger";
-import userService from "@/services/user";
+import { userService } from "@/services/user";
+import { useUser } from "@/hooks/use-user-context";
 import { Loader2 } from "lucide-react";
 
 interface MediaItem {
@@ -37,10 +45,10 @@ interface MediaItem {
 }
 
 export default function ProfileMediaManagement() {
+  const { refreshProfile } = useUser();
   const [profilePhotos, setProfilePhotos] = useState<MediaItem[]>([]);
-  const [portfolioItems, setPortfolioItems] = useState<MediaItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("photos");
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<{
     id: string;
@@ -48,29 +56,26 @@ export default function ProfileMediaManagement() {
     name: string;
   } | null>(null);
 
-  // Load portfolio items from service
+  // Load profile photos from service
   useEffect(() => {
     async function loadMedia() {
       setIsLoading(true);
       try {
-        // Load portfolio items from service
-        const portfolio = await userService.getPortfolio();
-        
-        // Convert PortfolioItem[] to MediaItem[]
-        const portfolioMedia: MediaItem[] = portfolio.map((item) => ({
-          id: item.id,
-          name: item.name,
-          type: "portfolio" as const,
-          uploadDate: item.uploadDate,
-          size: item.size,
-          thumbnail: item.url, // Use url as thumbnail
+        const photos = await userService.getProfilePhotos();
+        const transformed: MediaItem[] = photos.map((photo) => ({
+          id: photo.id,
+          name: photo.name,
+          type: "photo",
+          uploadDate: photo.uploadDate,
+          size: photo.size,
+          isPrimary: photo.isPrimary,
+          thumbnail: photo.url,
         }));
-        
-        setPortfolioItems(portfolioMedia);
-        setProfilePhotos([]);
+        setProfilePhotos(transformed);
       } catch (error) {
         logger.error("Error loading media:", error);
         toast.error("Failed to load media files");
+        setProfilePhotos([]);
       } finally {
         setIsLoading(false);
       }
@@ -93,17 +98,22 @@ export default function ProfileMediaManagement() {
 
     try {
       if (itemToDelete.type === "photo") {
-        setProfilePhotos(
-          profilePhotos.filter((photo) => photo.id !== itemToDelete.id)
-        );
+        await userService.deleteProfilePhoto(itemToDelete.id);
+        // Refresh profile to update avatarUrl if primary was deleted
+        await refreshProfile();
+        // Reload profile photos to get updated data
+        const photos = await userService.getProfilePhotos();
+        const transformed: MediaItem[] = photos.map((photo) => ({
+          id: photo.id,
+          name: photo.name,
+          type: "photo",
+          uploadDate: photo.uploadDate,
+          size: photo.size,
+          isPrimary: photo.isPrimary,
+          thumbnail: photo.url,
+        }));
+        setProfilePhotos(transformed);
         toast.success("Photo deleted successfully");
-      } else {
-        // Delete portfolio item via service
-        await userService.deletePortfolio(itemToDelete.id);
-        setPortfolioItems(
-          portfolioItems.filter((item) => item.id !== itemToDelete.id)
-        );
-        toast.success("Portfolio item deleted successfully");
       }
       setItemToDelete(null);
       setDeleteDialogOpen(false);
@@ -120,21 +130,24 @@ export default function ProfileMediaManagement() {
     }
   };
 
-  const handleDeletePortfolio = (id: string) => {
-    const item = portfolioItems.find((i) => i.id === id);
-    if (item) {
-      handleDeleteClick(id, "portfolio", item.name);
-    }
-  };
 
   const handleSetPrimary = async (id: string) => {
     try {
-      setProfilePhotos(
-        profilePhotos.map((photo) => ({
-          ...photo,
-          isPrimary: photo.id === id,
-        }))
-      );
+      await userService.setPrimaryProfilePhoto(id);
+      // Refresh profile to update avatarUrl
+      await refreshProfile();
+      // Reload profile photos to get updated data
+      const photos = await userService.getProfilePhotos();
+      const transformed: MediaItem[] = photos.map((photo) => ({
+        id: photo.id,
+        name: photo.name,
+        type: "photo",
+        uploadDate: photo.uploadDate,
+        size: photo.size,
+        isPrimary: photo.isPrimary,
+        thumbnail: photo.url,
+      }));
+      setProfilePhotos(transformed);
       toast.success("Profile photo set as primary");
     } catch (error) {
       toast.error("Failed to set primary photo");
@@ -154,76 +167,35 @@ export default function ProfileMediaManagement() {
     <div className="flex flex-col min-h-full">
       <div className="flex-1 p-6 space-y-6">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold mb-2">
-              Profile Media Management
-            </h1>
-            <p className="text-muted-foreground">
-              Upload and manage your professional photos and portfolio items to
-              enhance your job applications.
-            </p>
-          </div>
-          <Button variant="outline" asChild className="w-full sm:w-auto">
-            <Link to="/user-profile-management">
-              <SafeIcon name="ArrowLeft" size={16} className="mr-2" />
-              Back to Profile
-            </Link>
-          </Button>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold mb-2">
+            Profile Media Management
+          </h1>
+          <p className="text-muted-foreground">
+            Upload and manage your professional profile photos to enhance your job applications.
+          </p>
         </div>
 
         {/* Main Content */}
         <Card>
           <CardHeader>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div>
-                <CardTitle>Media Management</CardTitle>
-                <CardDescription>
-                  Manage your profile photos and portfolio items
-                </CardDescription>
-              </div>
-              <div className="flex gap-2">
-                {activeTab === "photos" ? (
-                  <Button asChild>
-                    <Link to="/profile-photo-upload">
-                      <SafeIcon name="Plus" size={16} className="mr-2" />
-                      Upload Photo
-                    </Link>
-                  </Button>
-                ) : (
-                  <Button asChild>
-                    <Link to="/portfolio-upload">
-                      <SafeIcon name="Plus" size={16} className="mr-2" />
-                      Upload Portfolio
-                    </Link>
-                  </Button>
-                )}
-              </div>
+            <div>
+              <CardTitle>Profile Photos</CardTitle>
+              <CardDescription>
+                Manage your profile photos
+              </CardDescription>
             </div>
           </CardHeader>
           <CardContent>
-            <Tabs
-              value={activeTab}
-              onValueChange={setActiveTab}
-              className="w-full"
-            >
-              <TabsList className="grid w-full grid-cols-2 mb-6">
-                <TabsTrigger value="photos" className="flex items-center gap-2">
-                  <SafeIcon name="Image" size={16} />
-                  Profile Photos ({profilePhotos.length})
-                </TabsTrigger>
-                <TabsTrigger
-                  value="portfolio"
-                  className="flex items-center gap-2"
-                >
-                  <SafeIcon name="FileText" size={16} />
-                  Portfolio ({portfolioItems.length})
-                </TabsTrigger>
-              </TabsList>
-
-              {/* Profile Photos Tab */}
-              <TabsContent value="photos" className="space-y-6">
-                {profilePhotos.length > 0 ? (
+            <div className="space-y-6">
+              {profilePhotos.length > 0 ? (
+                <>
+                  <div className="mb-4 flex justify-end">
+                    <Button onClick={() => setUploadDialogOpen(true)}>
+                      <SafeIcon name="Upload" size={18} className="mr-2" />
+                      Upload Another Photo
+                    </Button>
+                  </div>
                   <MediaUploadSection
                     items={profilePhotos}
                     type="photo"
@@ -231,77 +203,39 @@ export default function ProfileMediaManagement() {
                     onDeleteClick={handleDeleteClick}
                     onSetPrimary={handleSetPrimary}
                   />
-                ) : (
-                  <div className="text-center py-12">
-                    <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
-                      <SafeIcon
-                        name="Image"
-                        size={40}
-                        className="text-muted-foreground"
-                        aria-hidden="true"
-                      />
-                    </div>
-                    <h3 className="text-lg font-semibold mb-2">
-                      No profile photos uploaded yet
-                    </h3>
-                    <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                      Upload professional photos to enhance your job
-                      applications. You can set one as your primary profile
-                      photo.
-                    </p>
-                    <Button asChild>
-                      <Link to="/profile-photo-upload">
-                        <SafeIcon name="Upload" size={16} className="mr-2" />
-                        Upload Your First Photo
-                      </Link>
-                    </Button>
+                </>
+              ) : (
+                <div className="text-center py-12">
+                  <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
+                    <SafeIcon
+                      name="Image"
+                      size={40}
+                      className="text-muted-foreground"
+                      aria-hidden="true"
+                    />
                   </div>
-                )}
-              </TabsContent>
-
-              {/* Portfolio Tab */}
-              <TabsContent value="portfolio" className="space-y-6">
-                {portfolioItems.length > 0 ? (
-                  <MediaUploadSection
-                    items={portfolioItems}
-                    type="portfolio"
-                    onDelete={handleDeletePortfolio}
-                    onDeleteClick={handleDeleteClick}
-                  />
-                ) : (
-                  <div className="text-center py-12">
-                    <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
-                      <SafeIcon
-                        name="FileText"
-                        size={40}
-                        className="text-muted-foreground"
-                        aria-hidden="true"
-                      />
-                    </div>
-                    <h3 className="text-lg font-semibold mb-2">
-                      No portfolio items uploaded yet
-                    </h3>
-                    <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                      Upload portfolio documents, project samples, or links to
-                      showcase your work and skills to employers.
-                    </p>
-                    <Button asChild>
-                      <Link to="/portfolio-upload">
-                        <SafeIcon name="Upload" size={16} className="mr-2" />
-                        Upload Your First Portfolio Item
-                      </Link>
-                    </Button>
-                  </div>
-                )}
-              </TabsContent>
-            </Tabs>
+                  <h3 className="text-lg font-semibold mb-2">
+                    No profile photos uploaded yet
+                  </h3>
+                  <p className="text-muted-foreground text-center mb-6 max-w-sm mx-auto">
+                    Upload professional photos to enhance your job
+                    applications. You can set one as your primary profile
+                    photo.
+                  </p>
+                  <Button onClick={() => setUploadDialogOpen(true)}>
+                    <SafeIcon name="Upload" size={18} className="mr-2" />
+                    Upload Your First Photo
+                  </Button>
+                </div>
+              )}
+            </div>
           </CardContent>
         </Card>
 
-        {/* Info Card */}
+        {/* Tips Section */}
         <Card className="bg-gradient-to-br from-amber-50/80 to-orange-50/50 border-amber-200/50">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="text-base flex items-center gap-2">
               <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center">
                 <SafeIcon
                   name="Lightbulb"
@@ -309,7 +243,7 @@ export default function ProfileMediaManagement() {
                   className="text-amber-600"
                 />
               </div>
-              Tips for Better Applications
+              Tips for Better Profile Photos
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -320,10 +254,9 @@ export default function ProfileMediaManagement() {
                 className="text-amber-600 mt-0.5 flex-shrink-0"
               />
               <div>
-                <p className="font-medium text-sm mb-1">Profile Photos</p>
+                <p className="font-medium text-sm mb-1">Professional Headshot</p>
                 <p className="text-sm text-muted-foreground">
-                  Use a professional headshot with good lighting and a clean
-                  background. Avoid casual or group photos.
+                  Use a professional headshot with good lighting and a clean background. Avoid casual or group photos.
                 </p>
               </div>
             </div>
@@ -334,10 +267,22 @@ export default function ProfileMediaManagement() {
                 className="text-amber-600 mt-0.5 flex-shrink-0"
               />
               <div>
-                <p className="font-medium text-sm mb-1">Portfolio Items</p>
+                <p className="font-medium text-sm mb-1">Appropriate Attire</p>
                 <p className="text-sm text-muted-foreground">
-                  Include your best work samples, case studies, or project
-                  documentation that demonstrates your skills and experience.
+                  Dress professionally in business or business-casual attire that matches your industry standards
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <SafeIcon
+                name="CheckCircle2"
+                size={18}
+                className="text-amber-600 mt-0.5 flex-shrink-0"
+              />
+              <div>
+                <p className="font-medium text-sm mb-1">Good Quality</p>
+                <p className="text-sm text-muted-foreground">
+                  Use a high-resolution photo with clear focus. Blurry or pixelated photos create a poor first impression
                 </p>
               </div>
             </div>
@@ -350,21 +295,68 @@ export default function ProfileMediaManagement() {
               <div>
                 <p className="font-medium text-sm mb-1">File Size</p>
                 <p className="text-sm text-muted-foreground">
-                  Keep files under 10MB for faster uploads and better
-                  performance.
+                  Keep photos under 5MB for faster uploads and better performance across different devices
                 </p>
               </div>
             </div>
           </CardContent>
         </Card>
 
+        {/* Navigation */}
+        <div className="flex items-center gap-2 mt-8 pt-6 border-t">
+          <Button variant="outline" asChild>
+            <Link to="/user-profile-management">
+              <SafeIcon name="ChevronLeft" size={18} className="mr-2" />
+              Back to Profile Management
+            </Link>
+          </Button>
+        </div>
+
+        {/* Upload Dialog */}
+        <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Upload Profile Photo</DialogTitle>
+              <DialogDescription>
+                Choose a clear, professional photo that shows your face clearly.
+                Supported formats: JPG, PNG, WebP. Max size: 5MB.
+              </DialogDescription>
+            </DialogHeader>
+            <ProfilePhotoUploadDialogForm
+              setAsPrimary={false}
+              onSuccess={async () => {
+                // Refresh profile first to get updated avatarUrl
+                await refreshProfile();
+                // Reload profile photos - wait a bit for backend to save
+                await new Promise(resolve => setTimeout(resolve, 500));
+                try {
+                  const photos = await userService.getProfilePhotos();
+                  const transformed: MediaItem[] = photos.map((photo) => ({
+                    id: photo.id,
+                    name: photo.name,
+                    type: "photo",
+                    uploadDate: photo.uploadDate,
+                    size: photo.size,
+                    isPrimary: photo.isPrimary,
+                    thumbnail: photo.url,
+                  }));
+                  setProfilePhotos(transformed);
+                } catch (error) {
+                  logger.error("Error loading profile photos:", error);
+                }
+                setUploadDialogOpen(false);
+              }}
+              onCancel={() => setUploadDialogOpen(false)}
+            />
+          </DialogContent>
+        </Dialog>
+
         {/* Delete Confirmation Dialog */}
         <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>
-                Delete{" "}
-                {itemToDelete?.type === "photo" ? "Photo" : "Portfolio Item"}?
+                Delete Photo?
               </AlertDialogTitle>
               <AlertDialogDescription>
                 Are you sure you want to delete "{itemToDelete?.name}"? This

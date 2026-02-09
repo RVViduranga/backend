@@ -17,6 +17,11 @@ import {
   ALLOWED_IMAGE_MIME_TYPES,
   MAX_IMAGE_SIZE_MB,
 } from "@/constants/app";
+import userService from "@/services/user";
+import { useUser } from "@/hooks/use-user-context";
+import { useAuth } from "@/hooks/use-auth-context";
+import { toast } from "sonner";
+import { logger } from "@/lib/logger";
 
 interface UploadState {
   status: "idle" | "uploading" | "success" | "error";
@@ -26,6 +31,8 @@ interface UploadState {
 
 export default function ProfilePhotoUploadForm() {
   const navigate = useNavigate();
+  const { refreshProfile } = useUser();
+  const { isAuthenticated } = useAuth();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>("");
   const [uploadState, setUploadState] = useState<UploadState>({
@@ -92,25 +99,42 @@ export default function ProfilePhotoUploadForm() {
     }
   };
 
-  // Simulate upload
+  // Upload avatar to backend
   const handleUpload = async () => {
     if (!selectedFile) return;
 
+    // Check if user is authenticated
+    if (!isAuthenticated) {
+      setUploadState({ 
+        status: "error", 
+        progress: 0, 
+        error: "You must be logged in to upload a profile photo. Please log in and try again." 
+      });
+      toast.error("You must be logged in to upload a profile photo.");
+      return;
+    }
+
     setUploadState({ status: "uploading", progress: 0 });
 
-    // Simulate upload progress
-    let progress = 0;
-    const interval = setInterval(() => {
-      progress += Math.random() * 30;
-      if (progress > 90) progress = 90;
-      setUploadState({ status: "uploading", progress: Math.floor(progress) });
-    }, 200);
-
-    // Simulate upload completion
-    setTimeout(() => {
-      clearInterval(interval);
+    try {
+      // Upload file to backend
+      const result = await userService.uploadAvatar(selectedFile);
+      
+      // Refresh profile to get updated avatarUrl
+      await refreshProfile();
+      
       setUploadState({ status: "success", progress: 100 });
-    }, 2000);
+      toast.success("Profile photo uploaded successfully!");
+    } catch (error: any) {
+      logger.error("Error uploading avatar:", error);
+      const errorMessage = error?.response?.data?.message || error?.message || "Failed to upload photo. Please try again.";
+      setUploadState({ 
+        status: "error", 
+        progress: 0, 
+        error: errorMessage 
+      });
+      toast.error(errorMessage);
+    }
   };
 
   // Handle remove file

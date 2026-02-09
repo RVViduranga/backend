@@ -29,12 +29,16 @@ interface EducationSectionProps {
   onChange: (education: EducationModel[]) => void;
 }
 
+interface EducationFormData extends EducationModel {
+  currentlyStudying?: boolean; // UI-only field for form state
+}
+
 export default function EducationSection({
   education,
   onChange,
 }: EducationSectionProps) {
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [formData, setFormData] = useState<EducationModel | null>(null);
+  const [formData, setFormData] = useState<EducationFormData | null>(null);
   const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
 
   const handleAddNew = () => {
@@ -44,12 +48,17 @@ export default function EducationSection({
       fieldOfStudy: "",
       startDate: "",
       endDate: "",
+      currentlyStudying: false,
     });
     setEditingId(-1);
   };
 
   const handleEdit = (index: number) => {
-    setFormData(education[index]);
+    const edu = education[index];
+    setFormData({
+      ...edu,
+      currentlyStudying: !edu.endDate || edu.endDate === "",
+    });
     setEditingId(index);
   };
 
@@ -74,12 +83,15 @@ export default function EducationSection({
       return;
     }
 
+    // Remove UI-only field before saving
+    const { currentlyStudying, ...educationData } = formData;
+    
     if (editingId === -1) {
-      onChange([...education, formData]);
+      onChange([...education, educationData]);
       toast.success("Education added successfully");
     } else if (editingId !== null) {
       const updated = [...education];
-      updated[editingId] = formData;
+      updated[editingId] = educationData;
       onChange(updated);
       toast.success("Education updated successfully");
     }
@@ -212,24 +224,23 @@ export default function EducationSection({
                 <Label htmlFor="startDate">Start Date *</Label>
                 <Input
                   id="startDate"
-                  type="text"
+                  type="month"
                   value={formData.startDate}
                   onChange={(e) =>
                     setFormData({ ...formData, startDate: e.target.value })
                   }
-                  placeholder="e.g., 2018"
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="endDate">End Date</Label>
                 <Input
                   id="endDate"
-                  type="text"
+                  type="month"
                   value={formData.endDate}
                   onChange={(e) =>
                     setFormData({ ...formData, endDate: e.target.value })
                   }
-                  placeholder="e.g., 2022 or leave blank if current"
+                  disabled={formData.currentlyStudying}
                 />
               </div>
             </div>

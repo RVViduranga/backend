@@ -96,7 +96,7 @@ export default function ProfileStatusCard({ profileCompletion }: ProfileStatusCa
 
         {/* CTA Button */}
         <Button className="w-full" asChild>
-          <Link to="/user-profile-management">
+          <Link to="/user-profile-setup">
             <SafeIcon name="Edit" size={16} className="mr-2" />
             Complete Profile
           </Link>

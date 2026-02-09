@@ -7,11 +7,11 @@ import {
   normalizeUserData,
   normalizeProfileData,
 } from './user-transformers';
-import type { UserModel, UserRole } from '@/models/users';
+import type { UserModel } from '@/models/users';
 import type { UserProfileModel, ProfileModel } from '@/models/profiles';
 
 describe('transformLegacyUserProfileToBackendModels', () => {
-  it('should split fullName into firstName and lastName', () => {
+  it('should preserve fullName in UserModel', () => {
     const legacy: UserProfileModel = {
       id: 'user_001',
       email: 'test@example.com',
@@ -22,11 +22,11 @@ describe('transformLegacyUserProfileToBackendModels', () => {
     } as UserProfileModel;
 
     const result = transformLegacyUserProfileToBackendModels(legacy);
-    expect(result.user.firstName).toBe('John');
-    expect(result.user.lastName).toBe('Doe');
+    expect(result.user.fullName).toBe('John Doe');
+    expect(result.user.email).toBe('test@example.com');
   });
 
-  it('should handle multi-word lastName', () => {
+  it('should handle multi-word fullName', () => {
     const legacy: UserProfileModel = {
       id: 'user_001',
       email: 'test@example.com',
@@ -37,8 +37,7 @@ describe('transformLegacyUserProfileToBackendModels', () => {
     } as UserProfileModel;
 
     const result = transformLegacyUserProfileToBackendModels(legacy);
-    expect(result.user.firstName).toBe('John');
-    expect(result.user.lastName).toBe('Michael Doe');
+    expect(result.user.fullName).toBe('John Michael Doe');
   });
 
   it('should create profile if cvUploaded is true', () => {
@@ -76,13 +75,7 @@ describe('normalizeUserData', () => {
     const user: UserModel = {
       id: 'user_001',
       email: 'test@example.com',
-      role: 'Seeker' as UserRole,
-      firstName: 'John',
-      lastName: 'Doe',
-      phone: '1234567890',
-      location: 'Colombo',
-      isVerified: true,
-      savedJobPosts: [],
+      fullName: 'John Doe',
     };
 
     const result = normalizeUserData(user);
@@ -100,9 +93,8 @@ describe('normalizeUserData', () => {
     } as UserProfileModel;
 
     const result = normalizeUserData(legacy);
-    expect(result.firstName).toBe('John');
-    expect(result.lastName).toBe('Doe');
-    expect(result.role).toBe('Seeker');
+    expect(result.fullName).toBe('John Doe');
+    expect(result.email).toBe('test@example.com');
   });
 
   it('should handle partial data with defaults', () => {
@@ -114,9 +106,7 @@ describe('normalizeUserData', () => {
     const result = normalizeUserData(data);
     expect(result.id).toBe('user_001');
     expect(result.email).toBe('test@example.com');
-    expect(result.role).toBe('Seeker');
-    expect(result.firstName).toBe('');
-    expect(result.isVerified).toBe(false);
+    expect(result.fullName).toBe('test@example.com'); // Falls back to email
   });
 });
 
@@ -129,40 +119,41 @@ describe('normalizeProfileData', () => {
   it('should normalize profile data', () => {
     const data = {
       id: 'profile_001',
-      cv: 'https://example.com/cv.pdf',
-      experience: 5,
-      qualification: 8,
-      skill: 7,
+      fullName: 'John Doe',
+      email: 'test@example.com',
+      phone: '1234567890',
+      location: 'Colombo',
+      cvUploaded: true,
     };
 
     const result = normalizeProfileData(data, 'user_001');
     expect(result?.id).toBe('profile_001');
     expect(result?.user).toBe('user_001');
-    expect(result?.cv).toBe('https://example.com/cv.pdf');
-    expect(result?.experience).toBe(5);
-    expect(result?.qualification).toBe(8);
-    expect(result?.skill).toBe(7);
+    expect(result?.fullName).toBe('John Doe');
+    expect(result?.email).toBe('test@example.com');
+    expect(result?.cvUploaded).toBe(true);
   });
 
   it('should generate ID if not provided', () => {
     const data = {
-      cv: 'https://example.com/cv.pdf',
+      fullName: 'John Doe',
+      email: 'test@example.com',
     };
 
     const result = normalizeProfileData(data, 'user_001');
     expect(result?.id).toBe('user_001_profile');
   });
 
-  it('should handle non-numeric experience/qualification/skill', () => {
+  it('should handle arrays for education and experience', () => {
     const data = {
-      experience: '5',
-      qualification: 'invalid',
-      skill: null,
+      education: [{ institution: 'University' }],
+      experience: [{ company: 'Company' }],
+      mediaFiles: [{ id: 'file1' }],
     };
 
     const result = normalizeProfileData(data, 'user_001');
-    expect(result?.experience).toBe(0);
-    expect(result?.qualification).toBe(0);
-    expect(result?.skill).toBe(0);
+    expect(result?.education).toEqual([{ institution: 'University' }]);
+    expect(result?.experience).toEqual([{ company: 'Company' }]);
+    expect(result?.mediaFiles).toEqual([{ id: 'file1' }]);
   });
 });

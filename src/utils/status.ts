@@ -4,6 +4,7 @@
  */
 
 import type { ApplicationStatus, JobStatus } from "@/constants/status";
+import type { ApplicationStatus as BackendApplicationStatus } from "@/models/applications";
 import {
   APPLICATION_STATUS,
   APPLICATION_STATUS_COLORS,
@@ -11,20 +12,82 @@ import {
 } from "@/constants/status";
 
 /**
+ * Map backend ApplicationStatus to frontend ApplicationStatus
+ * Backend: "Pending" | "Reviewed" | "Accepted" | "Rejected"
+ * Frontend: "pending" | "reviewing" | "shortlisted" | "interview" | "accepted" | "rejected"
+ */
+export function mapBackendToFrontendStatus(
+  status: BackendApplicationStatus
+): ApplicationStatus {
+  switch (status) {
+    case "Pending":
+      return APPLICATION_STATUS.PENDING;
+    case "Reviewed":
+      return APPLICATION_STATUS.REVIEWING; // "Reviewed" maps to "reviewing"
+    case "Accepted":
+      return APPLICATION_STATUS.ACCEPTED;
+    case "Rejected":
+      return APPLICATION_STATUS.REJECTED;
+    default:
+      return APPLICATION_STATUS.PENDING;
+  }
+}
+
+/**
+ * Map frontend ApplicationStatus to backend ApplicationStatus
+ * Frontend: "pending" | "reviewing" | "shortlisted" | "interview" | "accepted" | "rejected"
+ * Backend: "Pending" | "Reviewed" | "Accepted" | "Rejected"
+ */
+export function mapFrontendToBackendStatus(
+  status: ApplicationStatus
+): BackendApplicationStatus {
+  switch (status) {
+    case APPLICATION_STATUS.PENDING:
+      return "Pending";
+    case APPLICATION_STATUS.REVIEWING:
+    case APPLICATION_STATUS.SHORTLISTED:
+    case APPLICATION_STATUS.INTERVIEW:
+      return "Reviewed"; // All review stages map to "Reviewed"
+    case APPLICATION_STATUS.ACCEPTED:
+      return "Accepted";
+    case APPLICATION_STATUS.REJECTED:
+      return "Rejected";
+    default:
+      return "Pending";
+  }
+}
+
+/**
  * Get CSS class for application status badge color
+ * Accepts both frontend and backend ApplicationStatus types
  */
 export function getApplicationStatusColorClass(
-  status: ApplicationStatus
+  status: ApplicationStatus | BackendApplicationStatus
 ): string {
-  const color = APPLICATION_STATUS_COLORS[status];
+  // Map backend status to frontend if needed
+  const frontendStatus: ApplicationStatus =
+    status === "Pending" || status === "Reviewed" || status === "Accepted" || status === "Rejected"
+      ? mapBackendToFrontendStatus(status as BackendApplicationStatus)
+      : (status as ApplicationStatus);
+  
+  const color = APPLICATION_STATUS_COLORS[frontendStatus];
   return `bg-${color}-100 text-${color}-800`;
 }
 
 /**
  * Get icon name for application status
+ * Accepts both frontend and backend ApplicationStatus types
  */
-export function getApplicationStatusIcon(status: ApplicationStatus): string {
-  switch (status) {
+export function getApplicationStatusIcon(
+  status: ApplicationStatus | BackendApplicationStatus
+): string {
+  // Map backend status to frontend if needed
+  const frontendStatus: ApplicationStatus =
+    status === "Pending" || status === "Reviewed" || status === "Accepted" || status === "Rejected"
+      ? mapBackendToFrontendStatus(status as BackendApplicationStatus)
+      : (status as ApplicationStatus);
+  
+  switch (frontendStatus) {
     case APPLICATION_STATUS.ACCEPTED:
       return "CheckCircle";
     case APPLICATION_STATUS.INTERVIEW:

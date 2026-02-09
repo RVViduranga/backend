@@ -152,7 +152,7 @@ describe('companyService.updateProfile', () => {
       headquarters: '456 New St',
     } as any);
 
-    expect(updated.address).toBe('456 New St');
+    expect(updated.location).toBe('456 New St');
   });
 });
 

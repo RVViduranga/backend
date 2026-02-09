@@ -2,7 +2,7 @@
 import { useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import SafeIcon from '@/components/common/safe-icon'
-import { PORTFOLIO_ACCEPTED_TYPES, MAX_PORTFOLIO_SIZE_MB } from '@/constants/app'
+import { PROJECT_ACCEPTED_TYPES, MAX_PROJECT_SIZE_MB } from '@/constants/app'
 
 interface FileUploadZoneProps {
   onFilesSelected: (files: File[]) => void
@@ -12,8 +12,8 @@ interface FileUploadZoneProps {
 
 export default function FileUploadZone({
   onFilesSelected,
-  maxSize = MAX_PORTFOLIO_SIZE_MB,
-  acceptedTypes = PORTFOLIO_ACCEPTED_TYPES,
+  maxSize = MAX_PROJECT_SIZE_MB,
+  acceptedTypes = PROJECT_ACCEPTED_TYPES,
 }: FileUploadZoneProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [isDragActive, setIsDragActive] = useState(false)
@@ -98,7 +98,7 @@ export default function FileUploadZone({
           onChange={handleChange}
           accept={acceptedTypes.join(',')}
           className="hidden"
-          aria-label="Upload portfolio files"
+          aria-label="Upload project files"
         />
 
         <div className="flex flex-col items-center gap-3">

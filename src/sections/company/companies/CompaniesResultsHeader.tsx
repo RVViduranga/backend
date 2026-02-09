@@ -24,13 +24,13 @@ export default function CompaniesResultsHeader({
   onViewModeChange,
 }: CompaniesResultsHeaderProps) {
   return (
-    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 pb-6 border-b">
+    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 pb-4 border-b">
       {/* Results Count */}
       <div>
-        <p className="text-lg font-semibold">
+        <p className="text-lg font-semibold text-foreground">
           {resultCount} {resultCount === 1 ? "company" : "companies"} found
         </p>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-muted-foreground mt-0.5">
           {resultCount > 0
             ? "Explore opportunities with these companies"
             : "Try adjusting your search criteria"}
@@ -41,7 +41,7 @@ export default function CompaniesResultsHeader({
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full sm:w-auto">
         {/* Sort Dropdown */}
         <Select value={sortBy} onValueChange={(value: "name" | "jobs") => onSortChange(value)}>
-          <SelectTrigger className="w-full sm:w-[180px]">
+          <SelectTrigger className="w-full sm:w-[180px] h-9">
             <SafeIcon name="ArrowUpDown" size={16} className="mr-2" />
             <SelectValue />
           </SelectTrigger>
@@ -53,7 +53,7 @@ export default function CompaniesResultsHeader({
 
         {/* View Mode Toggle */}
         <div
-          className="flex items-center gap-1 border rounded-lg p-1 bg-muted"
+          className="flex items-center gap-1 border rounded-md p-1 bg-muted/50"
           role="tablist"
           aria-label="View mode"
         >
@@ -61,7 +61,7 @@ export default function CompaniesResultsHeader({
             variant={viewMode === "grid" ? "default" : "ghost"}
             size="sm"
             onClick={() => onViewModeChange("grid")}
-            className="h-8 w-8 p-0 transition-all"
+            className="h-8 w-8 p-0"
             title="Grid view"
             aria-label="Switch to grid view"
             aria-selected={viewMode === "grid"}
@@ -73,7 +73,7 @@ export default function CompaniesResultsHeader({
             variant={viewMode === "list" ? "default" : "ghost"}
             size="sm"
             onClick={() => onViewModeChange("list")}
-            className="h-8 w-8 p-0 transition-all"
+            className="h-8 w-8 p-0"
             title="List view"
             aria-label="Switch to list view"
             aria-selected={viewMode === "list"}

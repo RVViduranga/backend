@@ -30,7 +30,9 @@ import type { ExperienceModel } from "./experience";
  * - cvUploaded: boolean (default: false)
  * - education: EducationModel[] (embedded array)
  * - experience: ExperienceModel[] (embedded array)
- * - mediaFiles: MediaFileModel[] (embedded array)
+ * - cvs: CVModel[] (embedded array)
+ * - mediaFiles: MediaFileModel[] (embedded array - Profile Photos only)
+ * - projects: ProjectModel[] (embedded array)
  */
 export interface ProfileModel {
   id: string; // _id from backend (ObjectId)
@@ -40,11 +42,20 @@ export interface ProfileModel {
   phone?: string; // ✅ Backend field name
   headline?: string; // ✅ Backend field name (not "bio")
   location?: string; // ✅ Backend field name
+  address?: string; // ✅ Backend field name
+  city?: string; // ✅ Backend field name
+  state?: string; // ✅ Backend field name
+  zipCode?: string; // ✅ Backend field name
+  country?: string; // ✅ Backend field name
+  dateOfBirth?: string; // ✅ Backend field name
+  nationality?: string; // ✅ Backend field name
   avatarUrl?: string; // ✅ Backend field name
   cvUploaded: boolean; // ✅ Backend field name (default: false)
   education: EducationModel[]; // ✅ Backend embedded array
   experience: ExperienceModel[]; // ✅ Backend embedded array
-  mediaFiles: MediaFileModel[]; // ✅ Backend embedded array
+  cvs: CVModel[]; // ✅ Backend embedded array
+  mediaFiles: MediaFileModel[]; // ✅ Backend embedded array (Profile Photos only)
+  projects?: ProjectModel[]; // ✅ Backend embedded array
 }
 
 // ============================================================================
@@ -64,6 +75,13 @@ export interface UserProfileModel {
   phone: string;
   headline: string;
   location: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+  country?: string;
+  dateOfBirth?: string;
+  nationality?: string;
   avatarUrl: string;
   cvUploaded: boolean;
   education: Array<{
@@ -116,16 +134,26 @@ export interface UserProfileViewModel {
 // ============================================================================
 
 /**
- * CV Model (UI Display)
- * Used for displaying CV information in UI
+ * CV Model (Backend Schema Alignment)
+ * Embedded in Profile.cvs array
+ * 
+ * BACKEND SCHEMA (backend/src/models/Profile.ts):
+ * - id: string
+ * - fileName: string
+ * - name?: string (Display name)
+ * - uploadDate: string
+ * - url: string
+ * - sizeKB: number
+ * - isPrimary?: boolean
  */
 export interface CVModel {
   id: string;
-  name: string;
-  dateUploaded: string;
-  isPrimary: boolean;
-  sizeMB: number;
-  downloadUrl: string;
+  fileName: string;
+  name?: string; // Display name (optional)
+  uploadDate: string;
+  url: string;
+  sizeKB: number;
+  isPrimary?: boolean; // Primary flag for CVs
 }
 
 /**
@@ -165,24 +193,71 @@ export interface PortfolioItem {
 }
 
 /**
+ * ProjectFileModel (Backend Schema Alignment)
+ * Embedded in ProjectModel.files array
+ */
+export interface ProjectFileModel {
+  id: string;
+  fileName: string;
+  fileType: "Project Image" | "Project Document";
+  uploadDate: string;
+  url: string;
+  sizeKB: number;
+}
+
+/**
+ * ProjectModel (Backend Schema Alignment)
+ * Embedded in Profile.projects array
+ * 
+ * BACKEND SCHEMA (backend/src/models/Profile.ts):
+ * - id: string
+ * - title: string
+ * - description?: string
+ * - category?: string
+ * - platform?: "GitHub" | "Behance" | "Dribbble" | "Personal Website" | "Other" | "File Upload"
+ * - isFeatured?: boolean
+ * - projectLink?: string
+ * - files: ProjectFileModel[]
+ * - uploadedDate: string
+ */
+export interface ProjectModel {
+  id: string;
+  title: string;
+  description?: string;
+  category?: string;
+  platform?: "GitHub" | "Behance" | "Dribbble" | "Personal Website" | "Other" | "File Upload";
+  isFeatured?: boolean;
+  projectLink?: string;
+  files: ProjectFileModel[];
+  uploadedDate: string;
+}
+
+/**
  * MediaFileModel (Backend Schema Alignment)
  * Embedded in Profile.mediaFiles array
  * 
  * BACKEND SCHEMA (backend/src/models/Profile.ts):
  * - id: string
  * - fileName: string
- * - fileType: "CV" | "Portfolio Image" | "Portfolio Document"
+ * - name?: string (Display name, optional)
+ * - fileType: "Profile Photo"
  * - uploadDate: string
  * - url: string
  * - sizeKB: number
+ * - isPrimary?: boolean (for Profile Photos)
+ * 
+ * NOTE: CVs are now stored in the cvs array, not mediaFiles
+ * NOTE: Portfolio items are stored in the projects array, not mediaFiles
  */
 export interface MediaFileModel {
   id: string;
   fileName: string;
-  fileType: "CV" | "Portfolio Image" | "Portfolio Document";
+  name?: string; // Display name (optional)
+  fileType: "Profile Photo";
   uploadDate: string;
   url: string;
   sizeKB: number;
+  isPrimary?: boolean; // Primary flag for Profile Photos
 }
 
 // ============================================================================

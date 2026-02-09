@@ -19,7 +19,7 @@ import UploadSummary from "./UploadSummary";
 interface UploadedFile {
   id: string;
   name: string;
-  type: "cv" | "cover_letter" | "portfolio";
+  type: "cv" | "cover_letter";
   size: number;
   uploadedAt: string;
   status: "completed" | "uploading" | "error";
@@ -29,7 +29,7 @@ interface UploadedFile {
 interface UploadingFile {
   id: string;
   name: string;
-  type: "cv" | "cover_letter" | "portfolio";
+  type: "cv" | "cover_letter";
   progress: number;
   status: "uploading" | "completed" | "error";
 }
@@ -101,7 +101,7 @@ export default function ProfileMediaUploadForm() {
 
   const handleFileUpload = (
     files: File[],
-    type: "cv" | "cover_letter" | "portfolio"
+    type: "cv" | "cover_letter"
   ) => {
     const newUploadingFiles = files.map((file) => ({
       id: Math.random().toString(36).substr(2, 9),
@@ -132,7 +132,6 @@ export default function ProfileMediaUploadForm() {
   const coverLetterFiles = uploadedFiles.filter(
     (f) => f.type === "cover_letter"
   );
-  const portfolioFiles = uploadedFiles.filter((f) => f.type === "portfolio");
 
   const totalProgress =
     uploadingFiles.length > 0
@@ -150,7 +149,7 @@ export default function ProfileMediaUploadForm() {
       <div className="space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">Upload Your Documents</h1>
         <p className="text-muted-foreground text-base">
-          Add your CV, cover letter, and portfolio to strengthen your application
+          Add your CV and cover letter to strengthen your application
         </p>
       </div>
 
@@ -192,7 +191,7 @@ export default function ProfileMediaUploadForm() {
 
       {/* Upload Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3 h-11">
+        <TabsList className="grid w-full grid-cols-2 h-11">
           <TabsTrigger value="cv" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
             <SafeIcon name="FileText" size={16} />
             <span className="hidden sm:inline">CV/Resume</span>
@@ -210,16 +209,6 @@ export default function ProfileMediaUploadForm() {
             {coverLetterFiles.length > 0 && (
               <span className="ml-1 inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-xs font-semibold bg-primary/10 text-primary rounded-full">
                 {coverLetterFiles.length}
-              </span>
-            )}
-          </TabsTrigger>
-          <TabsTrigger value="portfolio" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-            <SafeIcon name="Briefcase" size={16} />
-            <span className="hidden sm:inline">Portfolio</span>
-            <span className="sm:hidden">Port.</span>
-            {portfolioFiles.length > 0 && (
-              <span className="ml-1 inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-xs font-semibold bg-primary/10 text-primary rounded-full">
-                {portfolioFiles.length}
               </span>
             )}
           </TabsTrigger>
@@ -261,23 +250,6 @@ export default function ProfileMediaUploadForm() {
           )}
         </TabsContent>
 
-        {/* Portfolio Tab */}
-        <TabsContent value="portfolio" className="space-y-6">
-          <FileUploadArea
-            type="portfolio"
-            title="Upload Portfolio Items"
-            description="Upload portfolio samples, project files, or links (Max 10MB per file)"
-            acceptedFormats=".pdf,.doc,.docx,.zip,.jpg,.png"
-            onFileUpload={(files) => handleFileUpload(files, "portfolio")}
-          />
-          {portfolioFiles.length > 0 && (
-            <UploadSummary
-              files={portfolioFiles}
-              onRemove={handleRemoveFile}
-              title="Your Portfolio Items"
-            />
-          )}
-        </TabsContent>
       </Tabs>
 
       {/* Uploading Files */}
@@ -316,7 +288,7 @@ export default function ProfileMediaUploadForm() {
           <Button variant="outline" asChild className="w-full sm:w-auto">
             <Link to="/profile-media-management">
               <SafeIcon name="Settings" size={16} className="mr-2" />
-              Manage Media
+              View Media
             </Link>
           </Button>
 
@@ -358,7 +330,7 @@ export default function ProfileMediaUploadForm() {
             </li>
             <li className="flex items-start gap-2">
               <SafeIcon name="CheckCircle2" size={16} className="text-green-600 mt-0.5 flex-shrink-0" />
-              <span>Include links to your portfolio, GitHub profile, or professional website</span>
+              <span>Add your projects and work samples separately in the Projects section</span>
             </li>
             <li className="flex items-start gap-2">
               <SafeIcon name="CheckCircle2" size={16} className="text-green-600 mt-0.5 flex-shrink-0" />

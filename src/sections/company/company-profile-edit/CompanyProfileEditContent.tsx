@@ -78,11 +78,10 @@ export default function CompanyProfileEditContent() {
         description: profile.description || "",
         website: profile.website || "",
         // Handle both field names for backward compatibility
-        headquarters: profile.headquarters || profile.address || "",
+        headquarters: profile.headquarters || profile.location || "",
         establishedYear: profile.establishedYear || 0,
         employeeCountRange: profile.employeeCountRange || "",
-        // Handle both field names for backward compatibility
-        logoUrl: profile.logoUrl || profile.logo || "",
+        logoUrl: profile.logoUrl || "",
       });
     }
   }, [profile]);

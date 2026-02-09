@@ -58,7 +58,7 @@ export function useJobPostReview(): UseJobPostReviewReturn {
             ? {
                 id: profile.id,
                 name: profile.name,
-                logoUrl: profile.logoUrl,
+                logoUrl: profile.logoUrl || '',
               }
             : null,
           user?.id // ✅ Set postedBy from auth context
@@ -139,7 +139,7 @@ export function useJobPostReview(): UseJobPostReviewReturn {
               ? {
                   id: profile.id,
                   name: profile.name,
-                  logoUrl: profile.logoUrl,
+                  logoUrl: profile.logoUrl || '',
                 }
               : null,
             user?.id // ✅ Set postedBy from auth context

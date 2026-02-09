@@ -5,11 +5,14 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import SafeIcon from "@/components/common/safe-icon";
-import type { UserCV } from "@/services/user";
+import { userService, type UserCV } from "@/services/user";
 import {
   ALLOWED_CV_MIME_TYPES,
   MAX_CV_SIZE_MB,
 } from "@/constants/app";
+import { toast } from "sonner";
+import { logger } from "@/lib/logger";
+import { env } from "@/config/env";
 
 interface CVUploadFormProps {
   onSuccess: (cv: UserCV) => void;
@@ -68,35 +71,27 @@ export default function CVUploadForm({
 
     setIsUploading(true);
     setError("");
+    setUploadProgress(0);
 
-    // Simulate upload progress
-    const progressInterval = setInterval(() => {
-      setUploadProgress((prev) => {
-        if (prev >= 90) {
-          clearInterval(progressInterval);
-          return prev;
-        }
-        return prev + Math.random() * 30;
-      });
-    }, 200);
+    try {
+      // Simulate upload progress for better UX
+      const progressInterval = setInterval(() => {
+        setUploadProgress((prev) => {
+          if (prev >= 90) {
+            clearInterval(progressInterval);
+            return prev;
+          }
+          return prev + Math.random() * 30;
+        });
+      }, 200);
 
-    // Simulate upload delay
-    setTimeout(() => {
+      // Call the service to upload CV
+      const newCV = await userService.uploadCV(selectedFile, cvName);
+
       clearInterval(progressInterval);
       setUploadProgress(100);
 
-      // Create mock CV object
-      const newCV: UserCV = {
-        id: Date.now().toString(),
-        name: cvName,
-        fileName: selectedFile.name,
-        uploadedDate: new Date().toISOString().split("T")[0],
-        fileSize: `${(selectedFile.size / 1024).toFixed(0)} KB`,
-        isPrimary: false,
-        format: selectedFile.name.split(".").pop()?.toUpperCase() || "PDF",
-        downloadUrl: URL.createObjectURL(selectedFile),
-      };
-
+      toast.success("CV uploaded successfully!");
       onSuccess(newCV);
 
       // Reset form
@@ -105,7 +100,14 @@ export default function CVUploadForm({
       setDescription("");
       setUploadProgress(0);
       setIsUploading(false);
-    }, 1500);
+    } catch (error: any) {
+      logger.error("Error uploading CV:", error);
+      const errorMessage = error?.response?.data?.message || error?.message || "Failed to upload CV. Please try again.";
+      setError(errorMessage);
+      toast.error(errorMessage);
+      setUploadProgress(0);
+      setIsUploading(false);
+    }
   };
 
   return (

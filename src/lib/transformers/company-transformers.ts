@@ -25,20 +25,17 @@ export function transformCompanyToDetailModel(
   return {
     id: company.id,
     name: company.name,
-    address: company.address,
-    logo: company.logo,
-    logoUrl: company.logo || "", // UI convenience
-    isVerified: company.isVerified,
-    
-    // UI convenience fields (may not be in backend)
-    description: additionalFields?.description,
-    website: additionalFields?.website,
-    headquarters: company.address, // Alias for address
-    establishedYear: undefined,
-    employeeCountRange: undefined,
-    industry: additionalFields?.industry,
-    activeJobsCount: additionalFields?.activeJobsCount,
-    totalApplicationsReceived: additionalFields?.totalApplicationsReceived,
+    description: company.description || additionalFields?.description || "",
+    location: company.location,
+    logoUrl: company.logoUrl,
+    website: company.website || additionalFields?.website,
+    headquarters: company.headquarters || company.location,
+    establishedYear: company.establishedYear,
+    employeeCountRange: company.employeeCountRange,
+    industry: company.industry || additionalFields?.industry,
+    activeJobsCount: company.activeJobsCount || additionalFields?.activeJobsCount || 0,
+    totalApplicationsReceived: company.totalApplicationsReceived || additionalFields?.totalApplicationsReceived || 0,
+    headerImageUrl: company.headerImageUrl,
   };
 }
 
@@ -47,13 +44,21 @@ export function transformCompanyToDetailModel(
  */
 export function normalizeCompanyData(data: any): CompanyModel {
   // If already a CompanyModel, return as-is
-  if (data.isVerified !== undefined && data.address) {
+  if (data.location && data.description) {
     return {
-      id: data.id,
-      name: data.name,
-      address: data.address || data.headquarters || "",
-      logo: data.logo || data.logoUrl || undefined,
-      isVerified: data.isVerified || false,
+      id: data.id || "",
+      name: data.name || "",
+      description: data.description || "",
+      location: data.location || data.headquarters || "",
+      logoUrl: data.logoUrl,
+      website: data.website,
+      headerImageUrl: data.headerImageUrl,
+      headquarters: data.headquarters,
+      establishedYear: data.establishedYear,
+      employeeCountRange: data.employeeCountRange,
+      industry: data.industry,
+      activeJobsCount: data.activeJobsCount || 0,
+      totalApplicationsReceived: data.totalApplicationsReceived || 0,
     };
   }
 
@@ -61,8 +66,16 @@ export function normalizeCompanyData(data: any): CompanyModel {
   return {
     id: data.id || "",
     name: data.name || "",
-    address: data.address || data.headquarters || "",
-    logo: data.logo || data.logoUrl || undefined,
-    isVerified: data.isVerified || false,
+    description: data.description || "",
+    location: data.location || data.headquarters || data.address || "",
+    logoUrl: data.logoUrl || data.logo,
+    website: data.website,
+    headerImageUrl: data.headerImageUrl,
+    headquarters: data.headquarters,
+    establishedYear: data.establishedYear,
+    employeeCountRange: data.employeeCountRange,
+    industry: data.industry,
+    activeJobsCount: data.activeJobsCount || 0,
+    totalApplicationsReceived: data.totalApplicationsReceived || 0,
   };
 }

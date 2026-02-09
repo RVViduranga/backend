@@ -2,16 +2,16 @@ import React from "react";
 import BaseLayout from "@/layouts/BaseLayout";
 import CommonHeader from "@/components/common/common-header";
 import ClientSidebarWrapper from "@/components/common/client-sidebar-wrapper";
-import PortfolioUploadContent from "@/sections/user/portfolio-upload/PortfolioUploadContent";
+import ProjectsWorkSamplesContent from "@/sections/user/projects-work-samples/ProjectsWorkSamplesContent";
 
-export const PortfolioUpload: React.FC = () => {
+export const ProjectsWorkSamples: React.FC = () => {
   return (
-    <BaseLayout title="Upload Portfolio - JobCenter">
+    <BaseLayout title="Projects & Work Samples - JobCenter">
       <CommonHeader variant="authenticated" />
-      <ClientSidebarWrapper variant="user" currentPage="/portfolio-upload">
+      <ClientSidebarWrapper variant="user" currentPage="/projects-work-samples">
         <div className="p-4 sm:p-6 lg:p-8">
           <div className="max-w-5xl mx-auto">
-            <PortfolioUploadContent />
+            <ProjectsWorkSamplesContent />
           </div>
         </div>
       </ClientSidebarWrapper>

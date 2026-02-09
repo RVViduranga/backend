@@ -22,7 +22,7 @@ import { emailSignupSchema, type EmailSignupInput } from "@/lib/validation";
 
 export default function EmailSignupForm() {
   const navigate = useNavigate();
-  const { registerUser, isAuthenticated, isLoading: authLoading } = useAuth();
+  const { registerUser, isAuthenticated, isLoading: authLoading, logout } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -39,11 +39,7 @@ export default function EmailSignupForm() {
 
   const { handleSubmit, formState: { errors, isSubmitting } } = form;
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/user-dashboard", { replace: true });
-    }
-  }, [isAuthenticated, navigate]);
+  // Note: We don't redirect authenticated users here because we want them to go to login after signup
 
   const onSubmit = async (data: EmailSignupInput) => {
     try {
@@ -53,9 +49,11 @@ export default function EmailSignupForm() {
         email: data.email,
         password: data.password,
       });
-      toast.success("Account created successfully! Redirecting to profile setup...");
+      // Log out the user so they need to sign in
+      logout();
+      toast.success("Account created successfully! Please sign in to continue.");
       setTimeout(() => {
-        navigate("/user-profile-setup", { replace: true });
+        navigate("/login", { replace: true });
       }, 500);
     } catch (error: any) {
       // Extract error message from API response or use default

@@ -48,10 +48,13 @@ export default function CVManagementContent() {
       setIsLoading(true);
       try {
         const loadedCVs = await userService.getCVs();
-        setCVs(loadedCVs);
-      } catch (error) {
+        setCVs(loadedCVs || []); // Ensure it's always an array
+      } catch (error: any) {
         logger.error("Error loading CVs:", error);
-        toast.error("Failed to load CVs. Please try again.");
+        const errorMessage = error?.response?.data?.message || error?.message || "Failed to load CVs. Please try again.";
+        toast.error(errorMessage);
+        // Set empty array on error so UI doesn't break
+        setCVs([]);
       } finally {
         setIsLoading(false);
       }
@@ -97,14 +100,22 @@ export default function CVManagementContent() {
   };
 
   const handleUploadSuccess = async (newCV: UserCV) => {
+    // Close dialog first
+    setUploadDialogOpen(false);
+    
+    // Small delay to ensure backend has saved the CV
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
     // Reload CVs from service
     try {
       const loadedCVs = await userService.getCVs();
       setCVs(loadedCVs);
-      setUploadDialogOpen(false);
       toast.success(`CV "${newCV.name}" uploaded successfully`);
     } catch (error) {
       logger.error("Error reloading CVs:", error);
+      toast.error("CV uploaded but failed to refresh list. Please refresh the page.");
+      // Add the new CV to the list manually as fallback
+      setCVs(prev => [...prev, newCV]);
     }
   };
 
@@ -136,34 +147,20 @@ export default function CVManagementContent() {
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-2">
-          <h1 className="text-3xl font-bold">CV Management</h1>
-          <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <SafeIcon name="Upload" size={18} className="mr-2" />
-                Upload New CV
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl">
-              <DialogHeader>
-                <DialogTitle>Upload Your CV</DialogTitle>
-                <DialogDescription>
-                  Upload a new resume or CV. Supported formats: PDF, DOC, DOCX
-                </DialogDescription>
-              </DialogHeader>
-              <CVUploadForm
-                onSuccess={handleUploadSuccess}
-                onCancel={() => setUploadDialogOpen(false)}
-              />
-            </DialogContent>
-          </Dialog>
+      <div className="mb-8 flex items-start justify-between">
+        <div>
+          <h1 className="text-3xl font-bold mb-2">CV Management</h1>
+          <p className="text-muted-foreground">
+            Manage your resume documents for job applications. You can upload
+            multiple CVs and select which one to use for each application.
+          </p>
         </div>
-        <p className="text-muted-foreground">
-          Manage your resume documents for job applications. You can upload
-          multiple CVs and select which one to use for each application.
-        </p>
+        {cvs.length > 0 && (
+          <Button onClick={() => setUploadDialogOpen(true)}>
+            <SafeIcon name="Upload" size={18} className="mr-2" />
+            Upload Another CV
+          </Button>
+        )}
       </div>
 
       {/* CVs List */}
@@ -183,30 +180,10 @@ export default function CVManagementContent() {
                 Upload your first CV to get started with job applications. You
                 can upload multiple versions for different positions.
               </p>
-              <Dialog
-                open={uploadDialogOpen}
-                onOpenChange={setUploadDialogOpen}
-              >
-                <DialogTrigger asChild>
-                  <Button>
-                    <SafeIcon name="Upload" size={18} className="mr-2" />
-                    Upload Your First CV
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-2xl">
-                  <DialogHeader>
-                    <DialogTitle>Upload Your CV</DialogTitle>
-                    <DialogDescription>
-                      Upload a new resume or CV. Supported formats: PDF, DOC,
-                      DOCX
-                    </DialogDescription>
-                  </DialogHeader>
-                  <CVUploadForm
-                    onSuccess={handleUploadSuccess}
-                    onCancel={() => setUploadDialogOpen(false)}
-                  />
-                </DialogContent>
-              </Dialog>
+              <Button onClick={() => setUploadDialogOpen(true)}>
+                <SafeIcon name="Upload" size={18} className="mr-2" />
+                Upload Your First CV
+              </Button>
             </CardContent>
           </Card>
         ) : (
@@ -306,31 +283,83 @@ export default function CVManagementContent() {
       </div>
 
       {/* Tips Section */}
-      {cvs.length > 0 && (
-        <Card className="mt-8 bg-blue-50 border-blue-200">
-          <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2">
-              <SafeIcon name="Lightbulb" size={20} className="text-blue-600" />
-              Tips for Better CVs
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm text-muted-foreground space-y-2">
-            <p>• Keep your CV updated with your latest experience and skills</p>
-            <p>
-              • Tailor different versions for different job types or industries
-            </p>
-            <p>
-              • Use clear formatting and professional fonts for better
-              readability
-            </p>
-            <p>• Ensure your CV is under 2 pages for most positions</p>
-            <p>
-              • Always set a primary CV that will be used by default in
-              applications
-            </p>
-          </CardContent>
-        </Card>
-      )}
+      <Card className="mt-8 bg-gradient-to-br from-blue-50/80 to-indigo-50/50 border-blue-200/50">
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+              <SafeIcon name="Lightbulb" size={18} className="text-blue-600" />
+            </div>
+            Tips for Better CVs
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="flex items-start gap-3">
+            <SafeIcon
+              name="CheckCircle2"
+              size={18}
+              className="text-blue-600 mt-0.5 flex-shrink-0"
+            />
+            <div>
+              <p className="font-medium text-sm mb-1">Keep It Updated</p>
+              <p className="text-sm text-muted-foreground">
+                Regularly update your CV with your latest experience, skills, and achievements
+              </p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <SafeIcon
+              name="CheckCircle2"
+              size={18}
+              className="text-blue-600 mt-0.5 flex-shrink-0"
+            />
+            <div>
+              <p className="font-medium text-sm mb-1">Tailor for Each Job</p>
+              <p className="text-sm text-muted-foreground">
+                Create different versions of your CV for different job types or industries to highlight relevant experience
+              </p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <SafeIcon
+              name="CheckCircle2"
+              size={18}
+              className="text-blue-600 mt-0.5 flex-shrink-0"
+            />
+            <div>
+              <p className="font-medium text-sm mb-1">Professional Formatting</p>
+              <p className="text-sm text-muted-foreground">
+                Use clear formatting, professional fonts, and consistent styling for better readability
+              </p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <SafeIcon
+              name="CheckCircle2"
+              size={18}
+              className="text-blue-600 mt-0.5 flex-shrink-0"
+            />
+            <div>
+              <p className="font-medium text-sm mb-1">Keep It Concise</p>
+              <p className="text-sm text-muted-foreground">
+                Ensure your CV is under 2 pages for most positions to maintain recruiter attention
+              </p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <SafeIcon
+              name="CheckCircle2"
+              size={18}
+              className="text-blue-600 mt-0.5 flex-shrink-0"
+            />
+            <div>
+              <p className="font-medium text-sm mb-1">Set Primary CV</p>
+              <p className="text-sm text-muted-foreground">
+                Always set a primary CV that will be used by default in job applications
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Navigation */}
       <div className="flex items-center gap-2 mt-8 pt-6 border-t">
@@ -341,6 +370,22 @@ export default function CVManagementContent() {
           </Link>
         </Button>
       </div>
+
+      {/* Upload Dialog - Single instance for both empty state and header button */}
+      <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Upload Your CV</DialogTitle>
+            <DialogDescription>
+              Upload a new resume or CV. Supported formats: PDF, DOC, DOCX
+            </DialogDescription>
+          </DialogHeader>
+          <CVUploadForm
+            onSuccess={handleUploadSuccess}
+            onCancel={() => setUploadDialogOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
@@ -353,7 +398,14 @@ export default function CVManagementContent() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <div className="flex gap-2 justify-end">
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel
+              onClick={() => {
+                setDeleteDialogOpen(false);
+                setSelectedCVId(null);
+              }}
+            >
+              Cancel
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirmDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"

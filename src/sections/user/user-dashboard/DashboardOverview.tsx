@@ -19,6 +19,7 @@ import { useCandidateJobContext } from "@/hooks/use-candidate-job-context";
 import { useCandidateApplicationContext } from "@/hooks/use-candidate-application-context";
 import { Loader2 } from "lucide-react";
 import { useMemo } from "react";
+import { calculateProfileCompletion } from "@/hooks/use-profile-completion";
 
 export default function DashboardOverview() {
   const { user } = useAuth();
@@ -38,22 +39,8 @@ export default function DashboardOverview() {
     ).length;
     const savedJobsCount = savedJobs.length;
 
-    // Calculate profile completion
-    let profileCompletion = 0;
-    if (profile) {
-      let completedFields = 0;
-      const totalFields = 6;
-
-      if (profile.fullName) completedFields++;
-      if (profile.email) completedFields++;
-      if (profile.phone) completedFields++;
-      if (profile.location) completedFields++;
-      if (profile.experience && profile.experience.length > 0)
-        completedFields++;
-      if (profile.education && profile.education.length > 0) completedFields++;
-
-      profileCompletion = Math.round((completedFields / totalFields) * 100);
-    }
+    // Calculate profile completion using shared hook
+    const profileCompletion = calculateProfileCompletion(profile);
 
     return {
       totalApplications,
@@ -140,7 +127,7 @@ export default function DashboardOverview() {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">
-              {applications.filter((app) => app.status === "interview").length}
+              {applications.filter((app) => app.status === "Reviewed").length}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
               Upcoming interviews

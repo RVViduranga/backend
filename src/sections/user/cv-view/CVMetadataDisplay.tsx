@@ -51,25 +51,20 @@ export default function CVMetadataDisplay({ cv }: CVMetadataDisplayProps) {
   ]
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-lg">Document Information</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          {metadataItems.map((item) => (
-            <div key={item.label} className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
-                <SafeIcon name={item.icon} size={18} className="text-muted-foreground" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm text-muted-foreground">{item.label}</p>
-                <p className="font-medium text-sm break-words">{item.value}</p>
-              </div>
+    <div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        {metadataItems.map((item) => (
+          <div key={item.label} className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
+              <SafeIcon name={item.icon} size={18} className="text-muted-foreground" />
             </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm text-muted-foreground mb-1">{item.label}</p>
+              <p className="font-medium text-sm break-words">{item.value}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   )
 }

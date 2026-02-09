@@ -12,6 +12,7 @@ export default function GoogleSignupForm() {
     isAuthenticated,
     isLoading: authLoading,
     loginWithGoogle,
+    logout,
   } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -47,11 +48,13 @@ export default function GoogleSignupForm() {
 
     try {
       await loginWithGoogle("user");
+      // Log out the user so they need to sign in
+      logout();
       toast.success(
-        "Account created successfully! Redirecting to profile setup..."
+        "Account created successfully! Please sign in to continue."
       );
       setTimeout(() => {
-        navigate("/user-profile-setup", { replace: true });
+        navigate("/login", { replace: true });
       }, 500);
     } catch (err) {
       const errorMessage =

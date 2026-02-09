@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   SidebarContent,
   SidebarGroup,
@@ -24,38 +23,17 @@ interface DashboardSidebarProps {
 
 export default function DashboardSidebar({
   variant = "user",
-  currentPage = "",
+  currentPage,
 }: DashboardSidebarProps) {
-  const [mounted, setMounted] = useState(false);
-  const isBrowser = typeof window !== "undefined";
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!isBrowser || !mounted) {
-    return null;
-  }
+  const location = useLocation();
+  // Use currentPage prop if provided, otherwise use current location pathname
+  const activePage = currentPage || location.pathname;
 
   const menuItems =
     variant === "company" ? COMPANY_DASHBOARD_MENU_ITEMS : USER_DASHBOARD_MENU_ITEMS;
 
   return (
     <>
-      <SidebarHeader className="border-b px-6 py-4">
-        <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-            <SafeIcon name="Briefcase" size={20} color="white" />
-          </div>
-          <div>
-            <p className="font-semibold text-sm">JobCenter</p>
-            <p className="text-xs text-muted-foreground">
-              {variant === "company" ? "Employer Portal" : "Job Seeker Portal"}
-            </p>
-          </div>
-        </div>
-      </SidebarHeader>
-
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Navigation</SidebarGroupLabel>
@@ -65,7 +43,7 @@ export default function DashboardSidebar({
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     asChild
-                    isActive={currentPage === item.href}
+                    isActive={activePage === item.href || activePage.startsWith(item.href + "/")}
                   >
                     <Link to={item.href}>
                       <SafeIcon name={item.icon} size={18} />

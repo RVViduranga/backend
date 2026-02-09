@@ -20,14 +20,12 @@ interface CVListSidebarProps {
   cvs: CV[]
   selectedCV: CV
   onSelectCV: (cv: CV) => void
-  onSetPrimary: (cvId: string) => void
 }
 
 export default function CVListSidebar({
   cvs,
   selectedCV,
   onSelectCV,
-  onSetPrimary,
 }: CVListSidebarProps) {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
@@ -78,21 +76,7 @@ export default function CVListSidebar({
                     </Badge>
                   )}
                 </div>
-                <p className="text-xs text-muted-foreground mb-2">{formatDate(cv.uploadDate)}</p>
-                {selectedCV.id === cv.id && !cv.isPrimary && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="w-full text-xs h-7"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      onSetPrimary(cv.id)
-                    }}
-                  >
-                    <SafeIcon name="Star" size={12} className="mr-1" />
-                    Set as Primary
-                  </Button>
-                )}
+                <p className="text-xs text-muted-foreground">{formatDate(cv.uploadDate)}</p>
               </button>
             ))}
 

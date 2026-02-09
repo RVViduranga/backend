@@ -7,7 +7,7 @@
  * - View models for UI convenience
  */
 
-import type { UserModel, UserRole } from "@/models/users";
+import type { UserModel } from "@/models/users";
 import type { ProfileModel, UserProfileModel, UserProfileViewModel } from "@/models/profiles";
 import { composeUserProfileViewModel } from "@/lib/view-models/user-profile-view-model";
 
@@ -39,7 +39,9 @@ export function transformLegacyUserProfileToBackendModels(
     cvUploaded: legacy.cvUploaded,
     education: legacy.education || [],
     experience: legacy.experience || [],
+    cvs: [], // Legacy doesn't have cvs
     mediaFiles: [], // Legacy doesn't have mediaFiles
+    projects: [], // Legacy doesn't have projects
   };
 
   return { user, profile };
@@ -119,6 +121,8 @@ export function normalizeProfileData(data: any, userId: string): ProfileModel | 
     cvUploaded: data.cvUploaded || false,
     education: Array.isArray(data.education) ? data.education : [],
     experience: Array.isArray(data.experience) ? data.experience : [],
+    cvs: Array.isArray(data.cvs) ? data.cvs : [],
     mediaFiles: Array.isArray(data.mediaFiles) ? data.mediaFiles : [],
+    projects: Array.isArray(data.projects) ? data.projects : [],
   };
 }
